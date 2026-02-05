@@ -21,14 +21,4 @@ public class KafkaTemplateConfig {
 	public KafkaTemplate<String, Transaction> transactionKafkaTemplate(ProducerFactory<String, Transaction> producerFactory) {
 		return new KafkaTemplate<>(producerFactory);
 	}
-
-	@Bean
-	public KafkaTemplate<String, byte[]> dlqKafkaTemplate(KafkaProperties kafkaProperties) {
-		Map<String, Object> props = new HashMap<>(kafkaProperties.buildProducerProperties());
-		props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-		props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class);
-
-		ProducerFactory<String, byte[]> factory = new DefaultKafkaProducerFactory<>(props);
-		return new KafkaTemplate<>(factory);
-	}
 }
