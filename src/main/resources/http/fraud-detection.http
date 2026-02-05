@@ -82,3 +82,69 @@ Content-Type: application/json
   "latitude": 35.6762,
   "longitude": 139.6503
 }
+
+### VELOCITY CHECK - Run all 4 quickly!    
+
+### 6. Velocity Test - Transaction 1 (same card, same city)
+POST {{baseUrl}}/api/transactions
+Content-Type: application/json
+
+{
+  "transactionId": "VEL-001",
+  "userId": "USR-VELOCITY",
+  "merchant": "Gas Station",
+  "city": "Miami",
+  "transactionAmount": 50.00,
+  "transactionTime": "{{$isoTimestamp}}",
+  "cardNumber": "9999-8888-7777-6666",
+  "latitude": 25.7617,
+  "longitude": -80.1918
+}
+
+### 7. Velocity Test - Transaction 2
+POST {{baseUrl}}/api/transactions
+Content-Type: application/json
+
+{
+  "transactionId": "VEL-002",
+  "userId": "USR-VELOCITY",
+  "merchant": "Convenience Store",
+  "city": "Miami",
+  "transactionAmount": 15.00,
+  "transactionTime": "{{$isoTimestamp}}",
+  "cardNumber": "9999-8888-7777-6666",
+  "latitude": 25.7617,
+  "longitude": -80.1918
+}
+
+### 8. Velocity Test - Transaction 3
+POST {{baseUrl}}/api/transactions
+Content-Type: application/json
+
+{
+  "transactionId": "VEL-003",
+  "userId": "USR-VELOCITY",
+  "merchant": "Fast Food",
+  "city": "Miami",
+  "transactionAmount": 12.00,
+  "transactionTime": "{{$isoTimestamp}}",
+  "cardNumber": "9999-8888-7777-6666",
+  "latitude": 25.7617,
+  "longitude": -80.1918
+}
+
+### 9. Velocity Test - Transaction 4 (triggers VELOCITY_CHECK alert!)
+POST {{baseUrl}}/api/transactions
+Content-Type: application/json
+
+{
+  "transactionId": "VEL-004",
+  "userId": "USR-VELOCITY",
+  "merchant": "Pharmacy",
+  "city": "Miami",
+  "transactionAmount": 8.00,
+  "transactionTime": "{{$isoTimestamp}}",
+  "cardNumber": "9999-8888-7777-6666",
+  "latitude": 25.7617,
+  "longitude": -80.1918
+}

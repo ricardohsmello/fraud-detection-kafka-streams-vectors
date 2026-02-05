@@ -37,9 +37,16 @@ Real-time fraud detection pipeline that scores card transactions using Kafka Str
 
 1. A transaction is sent via REST API to `transactions` topic
 2. Kafka Streams processes and groups by card number
-3. Rules detect anomalies (e.g., impossible travel)
+ 3. Rules detect anomalies
 4. Fraud alerts are published to `transactions-suspicious`
 5. Malformed messages (invalid JSON) are sent to `transactions-dlq`
+
+## Fraud Rules
+
+| Rule | Description | Example |
+|------|-------------|---------|
+| `IMPOSSIBLE_TRAVEL` | Same card used in distant locations in short time | Sao Paulo → New York in 5 minutes |
+| `VELOCITY_CHECK` | Too many transactions in a time window | 4+ transactions in 1 minute |
 
 ## Running
 
@@ -89,6 +96,8 @@ bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic transact
 
 ## Testing Fraud Detection
 
-To trigger an **impossible travel** alert, send two transactions with the same card from distant locations in quick succession (e.g., Sao Paulo → New York).
+**Impossible Travel:** Send two transactions with the same card from distant locations in quick succession (e.g., Sao Paulo → New York).
+
+**Velocity Check:** Send 4+ transactions with the same card within 1 minute.
 
 See `src/main/resources/http/fraud-detection.http` for example requests.
