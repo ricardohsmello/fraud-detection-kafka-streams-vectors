@@ -10,16 +10,36 @@ Real-time fraud detection pipeline that scores card transactions using Kafka Str
 - MongoDB *(coming soon)*
 - Voyage AI *(embedding generation)*
 
+## Kafka Topics
+
+| Topic | Description |
+|-------|-------------|
+| `transactions` | Receives all incoming transactions |
+| `transactions-suspicious` | Fraud alerts (e.g., impossible travel detected) |
+| `transactions-dlq` | Dead Letter Queue for malformed messages (e.g., invalid JSON) |
+
 ## How It Works
 
 ```
-[Transaction] → [Kafka: transactions] → [Kafka Streams] → [Fraud Rules] → [Kafka: transactions-suspicious]
+                                    ┌─────────────────────────┐
+                                    │ transactions-suspicious │
+                                    └────────────▲────────────┘
+                                                 │ fraud detected
+┌─────────────┐    ┌──────────────┐    ┌────────┴────────┐
+│ Transaction │───▶│ transactions │───▶│  Kafka Streams  │
+└─────────────┘    └──────────────┘    │  (Fraud Rules)  │
+                                       └────────┬────────┘
+                                                │ deserialization error
+                                    ┌───────────▼───────────┐
+                                    │   transactions-dlq    │
+                                    └───────────────────────┘
 ```
 
-1. A transaction is sent via REST API
+1. A transaction is sent via REST API to `transactions` topic
 2. Kafka Streams processes and groups by card number
 3. Rules detect anomalies (e.g., impossible travel)
-4. Suspicious transactions are published to a separate topic
+4. Fraud alerts are published to `transactions-suspicious`
+5. Malformed messages (invalid JSON) are sent to `transactions-dlq`
 
 ## Running
 
