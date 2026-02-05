@@ -4,7 +4,6 @@ import com.devnexus.frauddetection.domain.FraudAlert;
 import com.devnexus.frauddetection.domain.Transaction;
 
 import java.time.Duration;
-import java.time.Instant;
 import java.util.Optional;
 
 

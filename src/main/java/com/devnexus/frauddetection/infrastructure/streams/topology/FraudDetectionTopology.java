@@ -47,7 +47,7 @@ public class FraudDetectionTopology {
     }
 
     @Bean
-    public KStream<String, Transaction> fraudDetectionStream(StreamsBuilder builder) {
+    public KStream<String, FraudDetectionState> fraudDetectionStream(StreamsBuilder builder) {
         Serde<Transaction> transactionSerde = jsonSerde.forClass(Transaction.class);
         Serde<FraudDetectionState> stateSerde = jsonSerde.forClass(FraudDetectionState.class);
         Serde<FraudAlert> fraudAlertSerde = jsonSerde.forClass(FraudAlert.class);
@@ -86,7 +86,6 @@ public class FraudDetectionTopology {
                 .peek((cardNumber, state) -> log.info(">>> FRAUD CHECK: card={}, hasFraud={}",
                         cardNumber, state.hasFraudAlert()));
 
-        // Branch: fraud detected → suspicious, passed → to-score
         processedStream
                 .split(Named.as("fraud-"))
                 .branch(
@@ -107,6 +106,6 @@ public class FraudDetectionTopology {
                         )
                 );
 
-        return stream;
+        return processedStream;
         }
 }
