@@ -23,4 +23,5 @@ app:
     topics:
       transactions: transactions
       suspicious: transactions-suspicious
+      to-score: transactions-to-score
       dlq: transactions-dlq

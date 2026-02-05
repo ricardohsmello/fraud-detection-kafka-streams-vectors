@@ -15,31 +15,35 @@ Real-time fraud detection pipeline that scores card transactions using Kafka Str
 | Topic | Description |
 |-------|-------------|
 | `transactions` | Receives all incoming transactions |
-| `transactions-suspicious` | Fraud alerts (e.g., impossible travel detected) |
+ | `transactions-suspicious` | Blocked transactions (fraud detected by rules) |
+| `transactions-to-score` | Approved transactions (ready for embedding scoring) |
 | `transactions-dlq` | Dead Letter Queue for malformed messages (e.g., invalid JSON) |
 
 ## How It Works
 
 ```
-                                    ┌─────────────────────────┐
-                                    │ transactions-suspicious │
-                                    └────────────▲────────────┘
-                                                 │ fraud detected
-┌─────────────┐    ┌──────────────┐    ┌────────┴────────┐
-│ Transaction │───▶│ transactions │───▶│  Kafka Streams  │
-└─────────────┘    └──────────────┘    │  (Fraud Rules)  │
-                                       └────────┬────────┘
-                                                │ deserialization error
-                                    ┌───────────▼───────────┐
-                                    │   transactions-dlq    │
-                                    └───────────────────────┘
+                                       ┌─────────────────────────┐
+                                       │ transactions-suspicious │
+                                       │      (BLOCKED)          │
+                                       └────────────▲────────────┘
+                                                    │ fraud detected
+┌─────────────┐    ┌──────────────┐    ┌───────────┴───────────┐
+│ Transaction │───▶│ transactions │───▶│     Kafka Streams     │
+└─────────────┘    └──────────────┘    │     (Fraud Rules)     │
+                                       └───────────┬───────────┘
+                                                   │ passed
+                                       ┌───────────▼───────────┐
+                                       │  transactions-to-score │
+                                       │      (APPROVED)        │
+                                       └───────────────────────┘
 ```
 
 1. A transaction is sent via REST API to `transactions` topic
 2. Kafka Streams processes and groups by card number
- 3. Rules detect anomalies
-4. Fraud alerts are published to `transactions-suspicious`
-5. Malformed messages (invalid JSON) are sent to `transactions-dlq`
+3. Rules evaluate: Impossible Travel, Velocity Check
+4. **Blocked** → `transactions-suspicious` (fraud detected)
+5. **Approved** → `transactions-to-score` (ready for scoring)
+6. Malformed messages → `transactions-dlq`
 
 ## Fraud Rules
 
@@ -62,6 +66,8 @@ docker run -d --name kafka -p 9092:9092 apache/kafka:latest
 bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic transactions --partitions 1
 
 bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic transactions-suspicious --partitions 1
+
+bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic transactions-to-score --partitions 1
 ```
 
 ### 3. Run the Application

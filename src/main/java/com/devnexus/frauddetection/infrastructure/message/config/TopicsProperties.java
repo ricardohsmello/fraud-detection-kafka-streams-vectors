@@ -6,5 +6,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public record TopicsProperties(
     String transactions,
     String suspicious,
+    String toScore,
     String dlq
 ) {}
