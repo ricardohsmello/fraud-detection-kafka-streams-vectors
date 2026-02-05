@@ -24,17 +24,20 @@ Real-time fraud detection pipeline that scores card transactions using Kafka Str
 ```
                                        ┌─────────────────────────┐
                                        │ transactions-suspicious │
-                                       │      (BLOCKED)          │
+                                       │       (FraudAlert)      │
                                        └────────────▲────────────┘
-                                                    │ fraud detected
+                                                    │ YES
+                                                    │
 ┌─────────────┐    ┌──────────────┐    ┌───────────┴───────────┐
 │ Transaction │───▶│ transactions │───▶│     Kafka Streams     │
 └─────────────┘    └──────────────┘    │     (Fraud Rules)     │
+                                       │                       │
+                                       │   hasFraudAlert()?    │
                                        └───────────┬───────────┘
-                                                   │ passed
+                                                   │ NO
                                        ┌───────────▼───────────┐
-                                       │  transactions-to-score │
-                                       │      (APPROVED)        │
+                                       │ transactions-to-score  │
+                                       │     (Transaction)      │
                                        └───────────────────────┘
 ```
 

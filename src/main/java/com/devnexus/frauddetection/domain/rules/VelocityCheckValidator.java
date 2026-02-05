@@ -3,7 +3,6 @@ package com.devnexus.frauddetection.domain.rules;
 import com.devnexus.frauddetection.domain.FraudAlert;
 import com.devnexus.frauddetection.domain.Transaction;
 
-import java.time.Instant;
 import java.util.Optional;
 
 public class VelocityCheckValidator {
@@ -30,11 +29,6 @@ public class VelocityCheckValidator {
                 maxTransactions
         );
 
-        return Optional.of(new FraudAlert(
-                transaction,
-                RULE_ID,
-                description,
-                Instant.now().toString()
-        ));
+        return Optional.of(FraudAlert.of(transaction, RULE_ID, description));
     }
 }

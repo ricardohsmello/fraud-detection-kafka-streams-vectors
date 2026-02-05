@@ -24,9 +24,13 @@ public class KafkaTopicsConfig {
 	}
 
 	@Bean
+	public NewTopic toScoreTopic() {
+		return new NewTopic(topics.toScore(), 3, (short) 1);
+	}
+
+	@Bean
 	public NewTopic dlqTopic() {
 		return new NewTopic(topics.dlq(), 3, (short) 1);
 	}
-
 
 }

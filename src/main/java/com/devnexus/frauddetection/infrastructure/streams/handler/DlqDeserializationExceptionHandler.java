@@ -1,12 +1,12 @@
 package com.devnexus.frauddetection.infrastructure.streams.handler;
 
+import com.devnexus.frauddetection.infrastructure.message.support.KafkaHeaders;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.Headers;
-import org.apache.kafka.common.header.internals.RecordHeaders;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.streams.errors.DeserializationExceptionHandler;
@@ -14,8 +14,6 @@ import org.apache.kafka.streams.processor.ProcessorContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.nio.charset.StandardCharsets;
-import java.time.Instant;
 import java.util.Map;
 import java.util.Properties;
 
@@ -54,7 +52,7 @@ public class DlqDeserializationExceptionHandler implements DeserializationExcept
                 record.topic(), record.partition(), record.offset(), exception);
 
         try {
-            Headers headers = buildDlqHeaders(record.topic(), exception);
+            Headers headers = KafkaHeaders.forDlq(record.topic(), exception);
 
             ProducerRecord<String, byte[]> dlqRecord = new ProducerRecord<>(
                     dlqTopic,
@@ -80,18 +78,4 @@ public class DlqDeserializationExceptionHandler implements DeserializationExcept
         return DeserializationHandlerResponse.CONTINUE;
     }
 
-    private Headers buildDlqHeaders(String sourceTopic, Exception exception) {
-        RecordHeaders headers = new RecordHeaders();
-        addHeader(headers, "dlq.source.topic", sourceTopic);
-        addHeader(headers, "dlq.error.message", exception.getMessage());
-        addHeader(headers, "dlq.error.type", exception.getClass().getName());
-        addHeader(headers, "dlq.timestamp", Instant.now().toString());
-        return headers;
-    }
-
-    private void addHeader(RecordHeaders headers, String key, String value) {
-        if (value != null) {
-            headers.add(key, value.getBytes(StandardCharsets.UTF_8));
-        }
-    }
 }

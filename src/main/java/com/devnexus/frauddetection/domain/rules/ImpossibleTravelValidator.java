@@ -7,6 +7,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
 
+
 public class ImpossibleTravelValidator {
 
     private static final String RULE_ID = "IMPOSSIBLE_TRAVEL";
@@ -50,12 +51,7 @@ public class ImpossibleTravelValidator {
                 timeBetween.toMinutes()
         );
 
-        return Optional.of(new FraudAlert(
-                current,
-                RULE_ID,
-                description,
-                Instant.now().toString()
-        ));
+        return Optional.of(FraudAlert.of(current, RULE_ID, description));
     }
 
     private double calculateDistanceKm(double lat1, double lon1, double lat2, double lon2) {
