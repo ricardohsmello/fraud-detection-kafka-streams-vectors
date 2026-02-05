@@ -9,7 +9,8 @@ spring:
         commit.interval.ms: 100
         cache.max.bytes.buffering: 0
         state.dir: /tmp/kafka-streams-fraud
-        default.deserialization.exception.handler: org.apache.kafka.streams.errors.LogAndContinueExceptionHandler
+        default.deserialization.exception.handler: com.devnexus.frauddetection.infrastructure.streams.handler.DlqDeserializationExceptionHandler
+        dlq.topic.name: ${app.kafka.topics.dlq}
 
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
