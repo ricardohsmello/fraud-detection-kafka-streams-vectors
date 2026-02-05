@@ -1,6 +1,7 @@
 package com.devnexus.frauddetection.infrastructure.streams.topology;
 
 import com.devnexus.frauddetection.domain.CardTravelState;
+import com.devnexus.frauddetection.domain.FraudAlert;
 import com.devnexus.frauddetection.domain.Transaction;
 import com.devnexus.frauddetection.domain.rules.ImpossibleTravelValidator;
 import com.devnexus.frauddetection.infrastructure.message.config.TopicsProperties;
@@ -42,7 +43,8 @@ public class FraudDetectionTopology {
 	@Bean
 	public KStream<String, Transaction> impossibleTravelStream(StreamsBuilder builder) {
 		Serde<Transaction> transactionSerde = jsonSerde.forClass(Transaction.class);
-		Serde<CardTravelState> cardTraveStoreSerde = jsonSerde.forClass(CardTravelState.class);
+		Serde<CardTravelState> cardTravelStateSerde = jsonSerde.forClass(CardTravelState.class);
+		Serde<FraudAlert> fraudAlertSerde = jsonSerde.forClass(FraudAlert.class);
 
 		KStream<String, Transaction> stream = builder.stream(
 				topics.transactions(),
@@ -58,23 +60,23 @@ public class FraudDetectionTopology {
 						(cardNumber, newTransaction, currentState) -> {
 							Transaction previousTx = currentState.lastTransaction();
 
-							boolean isImpossible = false;
+							FraudAlert alert = null;
 							if (previousTx != null) {
-								isImpossible = validator.isImpossibleTravel(previousTx, newTransaction);
+								alert = validator.validate(previousTx, newTransaction).orElse(null);
 							}
 
-							return new CardTravelState(newTransaction, isImpossible);
+							return new CardTravelState(newTransaction, alert);
 						},
 						Materialized.<String, CardTravelState, KeyValueStore<Bytes, byte[]>>as("card-travel-store")
 								.withKeySerde(Serdes.String())
-								.withValueSerde(cardTraveStoreSerde)
+								.withValueSerde(cardTravelStateSerde)
 				)
 				.toStream()
-				.peek((cardNumber, state) -> log.info(">>> TRAVEL CHECK: card={}, impossible={}", cardNumber, state.impossibleTravelDetected()))
-				.filter((cardNumber, state) -> state.impossibleTravelDetected())
-				.mapValues(CardTravelState::lastTransaction)
-				.peek((cardNumber, tx) -> log.info(">>> IMPOSSIBLE TRAVEL DETECTED: {}", tx))
-				.to(topics.suspicious(), Produced.with(Serdes.String(), transactionSerde));
+				.peek((cardNumber, state) -> log.info(">>> TRAVEL CHECK: card={}, fraud={}", cardNumber, state.hasFraudAlert()))
+				.filter((cardNumber, state) -> state.hasFraudAlert())
+				.mapValues(CardTravelState::fraudAlert)
+				.peek((cardNumber, alert) -> log.info(">>> FRAUD DETECTED: {} - {}", alert.ruleId(), alert.description()))
+				.to(topics.suspicious(), Produced.with(Serdes.String(), fraudAlertSerde));
 
 		return stream;
 	}

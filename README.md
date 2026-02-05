@@ -32,9 +32,9 @@ docker run -d --name kafka -p 9092:9092 apache/kafka:latest
 ### 2. Create Topics
 
 ```bash
-docker exec -it kafka /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic transactions --partitions 1
+bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic transactions --partitions 1
 
-docker exec -it kafka /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic transactions-suspicious --partitions 1
+bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic transactions-suspicious --partitions 1
 ```
 
 ### 3. Run the Application
@@ -64,7 +64,7 @@ curl -X POST http://localhost:8081/api/transactions \
 ### 5. Watch Suspicious Transactions
 
 ```bash
-docker exec -it kafka /opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic transactions-suspicious --from-beginning
+bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic transactions-suspicious --from-beginning
 ```
 
 ## Testing Fraud Detection

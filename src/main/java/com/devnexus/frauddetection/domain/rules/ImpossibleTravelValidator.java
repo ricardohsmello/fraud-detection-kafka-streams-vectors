@@ -1,18 +1,21 @@
 package com.devnexus.frauddetection.domain.rules;
 
+import com.devnexus.frauddetection.domain.FraudAlert;
 import com.devnexus.frauddetection.domain.Transaction;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Optional;
 
 public class ImpossibleTravelValidator {
 
+    private static final String RULE_ID = "IMPOSSIBLE_TRAVEL";
     private static final double EARTH_RADIUS_KM = 6371.0;
     private static final double MAX_TRAVEL_SPEED_KMH = 900.0;
 
-    public boolean isImpossibleTravel(Transaction previous, Transaction current) {
+    public Optional<FraudAlert> validate(Transaction previous, Transaction current) {
         if (!hasValidCoordinates(previous) || !hasValidCoordinates(current)) {
-            return false;
+            return Optional.empty();
         }
 
         double distanceKm = calculateDistanceKm(
@@ -26,14 +29,33 @@ public class ImpossibleTravelValidator {
         );
 
         double hoursElapsed = timeBetween.toMinutes() / 60.0;
+        boolean isImpossible;
 
         if (hoursElapsed <= 0) {
-            return distanceKm > 1.0;
+            isImpossible = distanceKm > 1.0;
+        } else {
+            double requiredSpeedKmh = distanceKm / hoursElapsed;
+            isImpossible = requiredSpeedKmh > MAX_TRAVEL_SPEED_KMH;
         }
 
-        double requiredSpeedKmh = distanceKm / hoursElapsed;
+        if (!isImpossible) {
+            return Optional.empty();
+        }
 
-        return requiredSpeedKmh > MAX_TRAVEL_SPEED_KMH;
+        String description = String.format(
+                "%s to %s (%.0f km in %d min)",
+                previous.city(),
+                current.city(),
+                distanceKm,
+                timeBetween.toMinutes()
+        );
+
+        return Optional.of(new FraudAlert(
+                current,
+                RULE_ID,
+                description,
+                Instant.now().toString()
+        ));
     }
 
     private double calculateDistanceKm(double lat1, double lon1, double lat2, double lon2) {
