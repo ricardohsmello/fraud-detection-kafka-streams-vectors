@@ -25,3 +25,8 @@ app:
       suspicious: transactions-suspicious
       to-score: transactions-to-score
       dlq: transactions-dlq
+  fraud:
+    rules:
+      max-travel-speed-kmh: 900.0
+      max-transactions-per-window: 3
+      velocity-window-minutes: 1

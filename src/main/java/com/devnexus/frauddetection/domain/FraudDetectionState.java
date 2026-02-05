@@ -3,10 +3,11 @@ package com.devnexus.frauddetection.domain;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public record FraudDetectionState(
     Transaction lastTransaction,
-    List<String> recentTransactionTimes,
+    List<Instant> recentTransactionTimes,
     FraudAlert fraudAlert
 ) {
     private static final int MAX_RECENT_TRANSACTIONS = 100;
@@ -16,7 +17,7 @@ public record FraudDetectionState(
     }
 
     public FraudDetectionState withTransaction(Transaction transaction, FraudAlert alert) {
-        List<String> updatedTimes = new ArrayList<>(recentTransactionTimes);
+        List<Instant> updatedTimes = new ArrayList<>(recentTransactionTimes);
         updatedTimes.add(transaction.transactionTime());
 
         if (updatedTimes.size() > MAX_RECENT_TRANSACTIONS) {
@@ -34,11 +35,11 @@ public record FraudDetectionState(
             return 0;
         }
 
-        Instant currentTime = Instant.parse(lastTransaction.transactionTime());
+        Instant currentTime = lastTransaction.transactionTime();
         Instant windowStart = currentTime.minusSeconds(windowMinutes * 60);
 
         return recentTransactionTimes.stream()
-            .map(Instant::parse)
+            .filter(Objects::nonNull)
             .filter(time -> time.isAfter(windowStart))
             .count();
     }

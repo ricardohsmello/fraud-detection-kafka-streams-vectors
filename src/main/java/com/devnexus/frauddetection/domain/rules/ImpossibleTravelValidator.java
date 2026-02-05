@@ -12,7 +12,12 @@ public class ImpossibleTravelValidator {
 
     private static final String RULE_ID = "IMPOSSIBLE_TRAVEL";
     private static final double EARTH_RADIUS_KM = 6371.0;
-    private static final double MAX_TRAVEL_SPEED_KMH = 900.0;
+
+    private final double maxTravelSpeedKmh;
+
+    public ImpossibleTravelValidator(double maxTravelSpeedKmh) {
+        this.maxTravelSpeedKmh = maxTravelSpeedKmh;
+    }
 
     public Optional<FraudAlert> validate(Transaction previous, Transaction current) {
         if (!hasValidCoordinates(previous) || !hasValidCoordinates(current)) {
@@ -24,10 +29,10 @@ public class ImpossibleTravelValidator {
                 current.latitude(), current.longitude()
         );
 
-        Duration timeBetween = calculateTimeBetween(
+        Duration timeBetween = Duration.between(
                 previous.transactionTime(),
                 current.transactionTime()
-        );
+        ).abs();
 
         double hoursElapsed = timeBetween.toMinutes() / 60.0;
         boolean isImpossible;
@@ -36,7 +41,7 @@ public class ImpossibleTravelValidator {
             isImpossible = distanceKm > 1.0;
         } else {
             double requiredSpeedKmh = distanceKm / hoursElapsed;
-            isImpossible = requiredSpeedKmh > MAX_TRAVEL_SPEED_KMH;
+            isImpossible = requiredSpeedKmh > maxTravelSpeedKmh;
         }
 
         if (!isImpossible) {
@@ -71,11 +76,5 @@ public class ImpossibleTravelValidator {
 
     private boolean hasValidCoordinates(Transaction tx) {
         return tx.latitude() != null && tx.longitude() != null;
-    }
-
-    private Duration calculateTimeBetween(String time1, String time2) {
-        Instant instant1 = Instant.parse(time1);
-        Instant instant2 = Instant.parse(time2);
-        return Duration.between(instant1, instant2).abs();
     }
 }

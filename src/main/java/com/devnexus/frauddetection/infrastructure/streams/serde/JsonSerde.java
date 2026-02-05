@@ -1,6 +1,8 @@
 package com.devnexus.frauddetection.infrastructure.streams.serde;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
@@ -10,7 +12,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class JsonSerde {
 
-	private final ObjectMapper objectMapper = new ObjectMapper();
+	private final ObjectMapper objectMapper = new ObjectMapper()
+			.registerModule(new JavaTimeModule())
+			.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
 	public <T> Serde<T> forClass(Class<T> clazz) {
 		Serializer<T> serializer = (topic, data) -> {

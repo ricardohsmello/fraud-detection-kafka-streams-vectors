@@ -28,7 +28,6 @@ import org.springframework.context.annotation.Configuration;
 public class FraudDetectionTopology {
 
     private static final Logger log = LoggerFactory.getLogger(FraudDetectionTopology.class);
-    private static final long VELOCITY_WINDOW_MINUTES = 1;
 
     private final TopicsProperties topics;
     private final JsonSerde jsonSerde;
@@ -67,14 +66,13 @@ public class FraudDetectionTopology {
                         (cardNumber, newTransaction, currentState) -> {
                             FraudAlert alert = null;
 
-
                             Transaction previousTx = currentState.lastTransaction();
-                            if (previousTx != null && alert == null) {
+                            if (previousTx != null) {
                                 alert = impossibleTravelValidator.validate(previousTx, newTransaction).orElse(null);
                             }
 
                             if (alert == null) {
-                                long count = currentState.countTransactionsInWindow(VELOCITY_WINDOW_MINUTES) + 1;
+                                long count = currentState.countTransactionsInWindow(velocityCheckValidator.getWindowMinutes()) + 1;
                                 alert = velocityCheckValidator.validate(count, newTransaction).orElse(null);
                             }
 
@@ -110,5 +108,5 @@ public class FraudDetectionTopology {
                 );
 
         return stream;
-    }
+        }
 }

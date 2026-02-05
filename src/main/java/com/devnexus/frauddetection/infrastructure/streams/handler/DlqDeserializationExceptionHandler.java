@@ -41,6 +41,11 @@ public class DlqDeserializationExceptionHandler implements DeserializationExcept
 
         this.producer = new KafkaProducer<>(producerProps);
 
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            log.info("Closing DLQ producer");
+            producer.close();
+        }));
+
         log.info("DLQ handler configured with topic: {}", dlqTopic);
     }
 

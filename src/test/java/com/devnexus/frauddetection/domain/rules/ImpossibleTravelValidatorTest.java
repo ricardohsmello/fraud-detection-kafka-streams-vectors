@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -16,7 +17,7 @@ class ImpossibleTravelValidatorTest {
 
     @BeforeEach
     void setUp() {
-        validator = new ImpossibleTravelValidator();
+        validator = new ImpossibleTravelValidator(900.0);
     }
 
     @Test
@@ -24,14 +25,14 @@ class ImpossibleTravelValidatorTest {
         Transaction saoPaulo = new Transaction(
                 "tx1", "user1", "Starbucks", "Sao Paulo",
                 new BigDecimal("100.00"),
-                "2024-01-15T10:00:00Z", "1234-5678-9012-3456",
+                Instant.parse("2024-01-15T10:00:00Z"), "1234-5678-9012-3456",
                 -23.5505, -46.6333
         );
 
         Transaction newYork = new Transaction(
                 "tx2", "user1", "Apple Store", "New York",
                 new BigDecimal("200.00"),
-                "2024-01-15T11:00:00Z", "1234-5678-9012-3456",
+                Instant.parse("2024-01-15T11:00:00Z"), "1234-5678-9012-3456",
                 40.7128, -74.0060
         );
 
@@ -47,14 +48,14 @@ class ImpossibleTravelValidatorTest {
         Transaction saoPaulo = new Transaction(
                 "tx1", "user1", "Starbucks", "Sao Paulo",
                 new BigDecimal("100.00"),
-                "2024-01-15T06:00:00Z", "1234-5678-9012-3456",
+                Instant.parse("2024-01-15T06:00:00Z"), "1234-5678-9012-3456",
                 -23.5505, -46.6333
         );
 
         Transaction newYork = new Transaction(
                 "tx2", "user1", "Apple Store", "New York",
                 new BigDecimal("200.00"),
-                "2024-01-15T18:00:00Z", "1234-5678-9012-3456",
+                Instant.parse("2024-01-15T18:00:00Z"), "1234-5678-9012-3456",
                 40.7128, -74.0060
         );
 
@@ -66,14 +67,14 @@ class ImpossibleTravelValidatorTest {
         Transaction downtown = new Transaction(
                 "tx1", "user1", "Starbucks", "Sao Paulo",
                 new BigDecimal("50.00"),
-                "2024-01-15T10:00:00Z", "1234-5678-9012-3456",
+                Instant.parse("2024-01-15T10:00:00Z"), "1234-5678-9012-3456",
                 -23.5489, -46.6388
         );
 
         Transaction paulista = new Transaction(
                 "tx2", "user1", "McDonalds", "Sao Paulo",
                 new BigDecimal("75.00"),
-                "2024-01-15T10:30:00Z", "1234-5678-9012-3456",
+                Instant.parse("2024-01-15T10:30:00Z"), "1234-5678-9012-3456",
                 -23.5632, -46.6542
         );
 
@@ -85,14 +86,14 @@ class ImpossibleTravelValidatorTest {
         Transaction saoPaulo = new Transaction(
                 "tx1", "user1", "Starbucks", "Sao Paulo",
                 new BigDecimal("100.00"),
-                "2024-01-15T10:00:00Z", "1234-5678-9012-3456",
+                Instant.parse("2024-01-15T10:00:00Z"), "1234-5678-9012-3456",
                 -23.5505, -46.6333
         );
 
         Transaction rioDeJaneiro = new Transaction(
                 "tx2", "user1", "Starbucks", "Rio de Janeiro",
                 new BigDecimal("200.00"),
-                "2024-01-15T10:00:00Z", "1234-5678-9012-3456",
+                Instant.parse("2024-01-15T10:00:00Z"), "1234-5678-9012-3456",
                 -22.9068, -43.1729
         );
 
@@ -107,14 +108,14 @@ class ImpossibleTravelValidatorTest {
         Transaction withCoords = new Transaction(
                 "tx1", "user1", "Starbucks", "Sao Paulo",
                 new BigDecimal("100.00"),
-                "2024-01-15T10:00:00Z", "1234-5678-9012-3456",
+                Instant.parse("2024-01-15T10:00:00Z"), "1234-5678-9012-3456",
                 -23.5505, -46.6333
         );
 
         Transaction withoutCoords = new Transaction(
                 "tx2", "user1", "Unknown", "Unknown",
                 new BigDecimal("200.00"),
-                "2024-01-15T11:00:00Z", "1234-5678-9012-3456",
+                Instant.parse("2024-01-15T11:00:00Z"), "1234-5678-9012-3456",
                 null, null
         );
 
@@ -126,14 +127,14 @@ class ImpossibleTravelValidatorTest {
         Transaction saoPaulo = new Transaction(
                 "tx1", "user1", "Starbucks", "Sao Paulo",
                 new BigDecimal("100.00"),
-                "2024-01-15T10:00:00Z", "1234-5678-9012-3456",
+                Instant.parse("2024-01-15T10:00:00Z"), "1234-5678-9012-3456",
                 -23.5505, -46.6333
         );
 
         Transaction rio = new Transaction(
                 "tx2", "user1", "Starbucks", "Rio de Janeiro",
                 new BigDecimal("200.00"),
-                "2024-01-15T11:00:00Z", "1234-5678-9012-3456",
+                Instant.parse("2024-01-15T11:00:00Z"), "1234-5678-9012-3456",
                 -22.9068, -43.1729
         );
 
@@ -146,14 +147,14 @@ class ImpossibleTravelValidatorTest {
         Transaction saoPaulo = new Transaction(
                 "tx1", "user1", "Starbucks", "Sao Paulo",
                 new BigDecimal("100.00"),
-                "2024-01-15T10:00:00Z", "1234-5678-9012-3456",
+                Instant.parse("2024-01-15T10:00:00Z"), "1234-5678-9012-3456",
                 -23.5505, -46.6333
         );
 
         Transaction rio = new Transaction(
                 "tx2", "user1", "Starbucks", "Rio de Janeiro",
                 new BigDecimal("200.00"),
-                "2024-01-15T10:10:00Z", "1234-5678-9012-3456",
+                Instant.parse("2024-01-15T10:10:00Z"), "1234-5678-9012-3456",
                 -22.9068, -43.1729
         );
 

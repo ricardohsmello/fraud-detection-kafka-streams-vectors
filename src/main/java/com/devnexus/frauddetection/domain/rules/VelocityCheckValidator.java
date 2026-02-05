@@ -17,6 +17,10 @@ public class VelocityCheckValidator {
         this.windowMinutes = windowMinutes;
     }
 
+    public long getWindowMinutes() {
+        return windowMinutes;
+    }
+
     public Optional<FraudAlert> validate(long transactionCount, Transaction transaction) {
         if (transactionCount <= maxTransactions) {
             return Optional.empty();

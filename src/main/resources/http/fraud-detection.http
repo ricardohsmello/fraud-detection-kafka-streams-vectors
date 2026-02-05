@@ -30,7 +30,7 @@ Content-Type: application/json
   "city": "Sao Paulo",
   "transactionAmount": 189.90,
   "transactionTime": "{{$isoTimestamp}}",
-  "cardNumber": "4444-5555-6666-7777",
+  "cardNumber": "4444-5555-6666-7776",
   "latitude": -23.5505,
   "longitude": -46.6333
 }
@@ -46,7 +46,7 @@ Content-Type: application/json
   "city": "New York",
   "transactionAmount": 2499.00,
   "transactionTime": "{{$isoTimestamp}}",
-  "cardNumber": "4444-5555-6666-7777",
+  "cardNumber": "4444-5555-6666-7776",
   "latitude": 40.7580,
   "longitude": -73.9855
 }

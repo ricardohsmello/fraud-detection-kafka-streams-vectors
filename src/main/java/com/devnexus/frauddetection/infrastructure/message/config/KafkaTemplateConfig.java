@@ -18,9 +18,8 @@ import java.util.Map;
 public class KafkaTemplateConfig {
 
 	@Bean
-	@SuppressWarnings("unchecked")
-	public KafkaTemplate<String, Transaction> transactionKafkaTemplate(ProducerFactory<?, ?> producerFactory) {
-		return new KafkaTemplate<>((ProducerFactory<String, Transaction>) producerFactory);
+	public KafkaTemplate<String, Transaction> transactionKafkaTemplate(ProducerFactory<String, Transaction> producerFactory) {
+		return new KafkaTemplate<>(producerFactory);
 	}
 
 	@Bean

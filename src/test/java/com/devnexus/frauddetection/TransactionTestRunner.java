@@ -4,51 +4,53 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.time.LocalDateTime;
-import java.util.Random;
+import java.time.Instant;
 
 public class TransactionTestRunner {
 
     private static final String URL = "http://localhost:8081/api/transactions";
     private static final HttpClient client = HttpClient.newHttpClient();
-    private static final Random random = new Random();
+    private static final String CARD = "4532-0000-0000-1234";
 
     public static void main(String[] args) throws Exception {
-        System.out.println("Sending test transactions...\n");
+        System.out.println("=== Impossible Travel Test ===\n");
 
-        // 5 transações suspeitas (> 10.000)
-        for (int i = 1; i <= 5; i++) {
-            double amount = 10000 + random.nextInt(90000); // 10.001 a 100.000
-            sendTransaction("TXN-" + i, amount);
-            Thread.sleep(500);
+        sendTransaction("TXN-IT-1", "USR-001", "Starbucks", "Sao Paulo",
+                50.00, Instant.now().toString(), CARD, -23.5505, -46.6333);
+        Thread.sleep(500);
+
+        sendTransaction("TXN-IT-2", "USR-001", "Apple Store", "New York",
+                200.00, Instant.now().toString(), CARD, 40.7128, -74.0060);
+        Thread.sleep(1000);
+
+        System.out.println("\n=== Velocity Check Test (4 rapid transactions) ===\n");
+
+        String velocityCard = "4532-0000-0000-5678";
+        for (int i = 1; i <= 4; i++) {
+            sendTransaction("TXN-VEL-" + i, "USR-002", "Store " + i, "Miami",
+                    10.00 * i, Instant.now().toString(), velocityCard, 25.7617, -80.1918);
+            Thread.sleep(200);
         }
 
-        // 5 transações normais (< 10.000)
-        for (int i = 1; i <= 5; i++) {
-            double amount = random.nextInt(9999) + 1; // 1 a 9.999
-            sendTransaction("TXN-" + i, amount);
-            Thread.sleep(500);
-        }
-
-        System.out.println("\nDone! ");
+        System.out.println("\nDone!");
     }
 
-    private static void sendTransaction(String id, double amount) throws Exception {
+    private static void sendTransaction(String id, String userId, String merchant,
+                                         String city, double amount, String time,
+                                         String cardNumber, double lat, double lon) throws Exception {
         String json = """
             {
                 "transactionId": "%s",
+                "userId": "%s",
+                "merchant": "%s",
+                "city": "%s",
                 "transactionAmount": %.2f,
                 "transactionTime": "%s",
-                "cardNumber": "4532-%04d-%04d-%04d"
+                "cardNumber": "%s",
+                "latitude": %f,
+                "longitude": %f
             }
-            """.formatted(
-                id,
-                amount,
-                LocalDateTime.now().toString(),
-                random.nextInt(10000),
-                random.nextInt(10000),
-                random.nextInt(10000)
-            );
+            """.formatted(id, userId, merchant, city, amount, time, cardNumber, lat, lon);
 
         HttpRequest request = HttpRequest.newBuilder()
             .uri(URI.create(URL))
@@ -58,8 +60,7 @@ public class TransactionTestRunner {
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        String type = amount > 10000 ? "SUSPICIOUS" : "NORMAL";
-        System.out.printf("%s | ID: %-15s | Amount: %10.2f | Status: %d%n",
-            type, id, amount, response.statusCode());
+        System.out.printf("%-12s | ID: %-15s | Card: %s | City: %-12s | Amount: %8.2f | Status: %d%n",
+            merchant, id, cardNumber, city, amount, response.statusCode());
     }
 }

@@ -10,16 +10,13 @@ import org.springframework.kafka.annotation.EnableKafkaStreams;
 @EnableKafkaStreams
 public class KafkaStreamsConfig {
 
-	private static final long MAX_TRANSACTIONS_PER_WINDOW = 3;
-	private static final long WINDOW_MINUTES = 1;
-
 	@Bean
-	public ImpossibleTravelValidator impossibleTravelValidator() {
-		return new ImpossibleTravelValidator();
+	public ImpossibleTravelValidator impossibleTravelValidator(FraudRulesProperties properties) {
+		return new ImpossibleTravelValidator(properties.maxTravelSpeedKmh());
 	}
 
 	@Bean
-	public VelocityCheckValidator velocityCheckValidator() {
-		return new VelocityCheckValidator(MAX_TRANSACTIONS_PER_WINDOW, WINDOW_MINUTES);
+	public VelocityCheckValidator velocityCheckValidator(FraudRulesProperties properties) {
+		return new VelocityCheckValidator(properties.maxTransactionsPerWindow(), properties.velocityWindowMinutes());
 	}
 }

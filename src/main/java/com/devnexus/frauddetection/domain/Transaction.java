@@ -1,6 +1,7 @@
 package com.devnexus.frauddetection.domain;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 
 public record Transaction(
 		String transactionId,
@@ -8,7 +9,7 @@ public record Transaction(
 		String merchant,
 		String city,
 		BigDecimal transactionAmount,
-		String transactionTime,
+		Instant transactionTime,
 		String cardNumber,
 		Double latitude,
 		Double longitude
