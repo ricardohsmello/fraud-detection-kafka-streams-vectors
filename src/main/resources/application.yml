@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: fraud-detection
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    streams:
+      application-id: fraud-detection-streams
+      properties:
+        commit.interval.ms: 100
+        cache.max.bytes.buffering: 0
+        state.dir: /tmp/kafka-streams-fraud
+        default.deserialization.exception.handler: org.apache.kafka.streams.errors.LogAndContinueExceptionHandler
+
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+server:
+  port: 8081
+
+app:
+  kafka:
+    topics:
+      transactions: transactions
+      suspicious: transactions-suspicious
+      dlq: transactions-dlq

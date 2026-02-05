@@ -1,0 +1,84 @@
+### Fraud Detection API - IntelliJ HTTP Client
+
+### Variables
+@baseUrl = http://localhost:8081
+
+### 1. Transaction in Sao Paulo - Coffee Shop
+POST {{baseUrl}}/api/transactions
+Content-Type: application/json
+
+{
+  "transactionId": "TXN-001",
+  "userId": "USR-12345",
+  "merchant": "Starbucks",
+  "city": "Sao Paulo",
+  "transactionAmount": 25.50,
+  "transactionTime": "{{$isoTimestamp}}",
+  "cardNumber": "4444-5555-6666-7777",
+  "latitude": -23.5489,
+  "longitude": -46.6388
+}
+
+### 2. Transaction in Sao Paulo - Restaurant
+POST {{baseUrl}}/api/transactions
+Content-Type: application/json
+
+{
+  "transactionId": "TXN-002",
+  "userId": "USR-12345",
+  "merchant": "Outback Steakhouse",
+  "city": "Sao Paulo",
+  "transactionAmount": 189.90,
+  "transactionTime": "{{$isoTimestamp}}",
+  "cardNumber": "4444-5555-6666-7777",
+  "latitude": -23.5505,
+  "longitude": -46.6333
+}
+
+### 3. Suspicious Transaction in New York (same card, impossible travel)
+POST {{baseUrl}}/api/transactions
+Content-Type: application/json
+
+{
+  "transactionId": "TXN-003",
+  "userId": "USR-12345",
+  "merchant": "Apple Store",
+  "city": "New York",
+  "transactionAmount": 2499.00,
+  "transactionTime": "{{$isoTimestamp}}",
+  "cardNumber": "4444-5555-6666-7777",
+  "latitude": 40.7580,
+  "longitude": -73.9855
+}
+
+### 4. Transaction in London - Electronics Store
+POST {{baseUrl}}/api/transactions
+Content-Type: application/json
+
+{
+  "transactionId": "TXN-004",
+  "userId": "USR-67890",
+  "merchant": "Harrods",
+  "city": "London",
+  "transactionAmount": 450.00,
+  "transactionTime": "{{$isoTimestamp}}",
+  "cardNumber": "1111-2222-3333-4444",
+  "latitude": 51.4994,
+  "longitude": -0.1632
+}
+
+### 5. Suspicious Transaction in Tokyo (same card as London, impossible travel)
+POST {{baseUrl}}/api/transactions
+Content-Type: application/json
+
+{
+  "transactionId": "TXN-005",
+  "userId": "USR-67890",
+  "merchant": "Yodobashi Camera",
+  "city": "Tokyo",
+  "transactionAmount": 89000.00,
+  "transactionTime": "{{$isoTimestamp}}",
+  "cardNumber": "1111-2222-3333-4444",
+  "latitude": 35.6762,
+  "longitude": 139.6503
+}
