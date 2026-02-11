@@ -1,0 +1,3 @@
+com/devnexus/frauddetection/FraudDetectionApplicationTests.class
+com/devnexus/frauddetection/TransactionTestRunner.class
+com/devnexus/frauddetection/domain/rules/ImpossibleTravelValidatorTest.class
