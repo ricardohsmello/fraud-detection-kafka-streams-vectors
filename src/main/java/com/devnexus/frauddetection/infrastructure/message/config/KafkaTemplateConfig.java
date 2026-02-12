@@ -1,6 +1,6 @@
 package com.devnexus.frauddetection.infrastructure.message.config;
 
-import com.devnexus.frauddetection.domain.Transaction;
+import com.devnexus.frauddetection.domain.model.Transaction;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.KafkaTemplate;

@@ -1,5 +1,7 @@
 package com.devnexus.frauddetection.domain;
 
+import com.devnexus.frauddetection.domain.model.Transaction;
+
 import java.time.Instant;
 
 public record FraudAlert(

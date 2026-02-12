@@ -2,7 +2,8 @@ package com.devnexus.frauddetection.infrastructure.streams.topology;
 
 import com.devnexus.frauddetection.domain.FraudAlert;
 import com.devnexus.frauddetection.domain.FraudDetectionState;
-import com.devnexus.frauddetection.domain.Transaction;
+import com.devnexus.frauddetection.domain.events.SuspiciousTransactionEvent;
+import com.devnexus.frauddetection.domain.model.Transaction;
 import com.devnexus.frauddetection.domain.rules.ImpossibleTravelValidator;
 import com.devnexus.frauddetection.domain.rules.VelocityCheckValidator;
 import com.devnexus.frauddetection.infrastructure.message.config.TopicsProperties;
@@ -23,6 +24,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.time.Instant;
 
 @Configuration
 public class FraudDetectionTopology {
@@ -50,7 +53,9 @@ public class FraudDetectionTopology {
     public KStream<String, FraudDetectionState> fraudDetectionStream(StreamsBuilder builder) {
         Serde<Transaction> transactionSerde = jsonSerde.forClass(Transaction.class);
         Serde<FraudDetectionState> stateSerde = jsonSerde.forClass(FraudDetectionState.class);
-        Serde<FraudAlert> fraudAlertSerde = jsonSerde.forClass(FraudAlert.class);
+        Serde<SuspiciousTransactionEvent> suspiciousEventSerde =
+                jsonSerde.forClass(SuspiciousTransactionEvent.class);
+
 
         KStream<String, Transaction> stream = builder.stream(
                 topics.transactions(),
@@ -92,17 +97,30 @@ public class FraudDetectionTopology {
                         (cardNumber, state) -> state.hasFraudAlert(),
                         Branched.withConsumer(fraudStream ->
                                 fraudStream
-                                        .mapValues(FraudDetectionState::fraudAlert)
-                                        .peek((cardNumber, alert) -> log.info(">>> BLOCKED: {} - {}", alert.ruleId(), alert.description()))
-                                        .to(topics.suspicious(), Produced.with(Serdes.String(), fraudAlertSerde))
+                                        .mapValues(state -> new SuspiciousTransactionEvent(
+                                                state.lastTransaction(),
+                                                state.fraudAlert().ruleId(),
+                                                state.fraudAlert().description(),
+                                                Instant.now()
+                                        ))
+                                        .peek((card, evt) -> log.info(
+                                                ">>> BLOCKED: txId={}, rule={}",
+                                                evt.transaction().transactionId(),
+                                                evt.ruleId()))
+                                        .to(topics.suspicious(),
+                                                Produced.with(Serdes.String(), suspiciousEventSerde))
                         )
                 )
                 .defaultBranch(
                         Branched.withConsumer(passedStream ->
                                 passedStream
                                         .mapValues(FraudDetectionState::lastTransaction)
-                                        .peek((cardNumber, tx) -> log.info(">>> APPROVED: card={}, txId={}", cardNumber, tx.transactionId()))
-                                        .to(topics.toScore(), Produced.with(Serdes.String(), transactionSerde))
+                                        .peek((cardNumber, tx) -> log.info(
+                                                ">>> APPROVED: card={}, txId={}",
+                                                cardNumber,
+                                                tx.transactionId()))
+                                        .to(topics.toScore(),
+                                                Produced.with(Serdes.String(), transactionSerde))
                         )
                 );
 

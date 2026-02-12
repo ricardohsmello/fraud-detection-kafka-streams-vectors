@@ -1,7 +1,7 @@
 package com.devnexus.frauddetection.domain.rules;
 
 import com.devnexus.frauddetection.domain.FraudAlert;
-import com.devnexus.frauddetection.domain.Transaction;
+import com.devnexus.frauddetection.domain.model.Transaction;
 
 import java.time.Duration;
 import java.util.Optional;

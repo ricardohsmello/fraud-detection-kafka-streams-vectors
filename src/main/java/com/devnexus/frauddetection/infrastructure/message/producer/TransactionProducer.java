@@ -1,6 +1,6 @@
 package com.devnexus.frauddetection.infrastructure.message.producer;
 
-import com.devnexus.frauddetection.domain.Transaction;
+import com.devnexus.frauddetection.domain.model.Transaction;
 import com.devnexus.frauddetection.infrastructure.message.config.TopicsProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

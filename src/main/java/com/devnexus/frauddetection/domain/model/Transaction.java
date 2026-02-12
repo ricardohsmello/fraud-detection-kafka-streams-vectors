@@ -1,4 +1,4 @@
-package com.devnexus.frauddetection.domain;
+package com.devnexus.frauddetection.domain.model;
 
 import java.math.BigDecimal;
 import java.time.Instant;

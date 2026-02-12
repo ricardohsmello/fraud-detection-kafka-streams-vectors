@@ -1,6 +1,6 @@
 package com.devnexus.frauddetection.infrastructure.http;
 
-import com.devnexus.frauddetection.domain.Transaction;
+import com.devnexus.frauddetection.domain.model.Transaction;
 import com.devnexus.frauddetection.infrastructure.message.producer.TransactionProducer;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

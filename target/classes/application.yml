@@ -11,10 +11,15 @@ spring:
         state.dir: /tmp/kafka-streams-fraud
         default.deserialization.exception.handler: com.devnexus.frauddetection.infrastructure.streams.handler.DlqDeserializationExceptionHandler
         dlq.topic.name: ${app.kafka.topics.dlq}
+      auto-startup: true
 
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+  mongodb:
+    uri: ${MONGODB_URI}
+    database: fraud-detection
+
 server:
   port: 8081
 
@@ -30,3 +35,12 @@ app:
       max-travel-speed-kmh: 900.0
       max-transactions-per-window: 3
       velocity-window-minutes: 1
+    vector:
+      top-k: 5
+      num-candidates: 50
+      similarity-threshold: 0.85
+  embedding:
+    voyage:
+      api-key: ${VOYAGEAI_API_KEY}
+      model: voyage-3-lite
+      base-url: https://api.voyageai.com
