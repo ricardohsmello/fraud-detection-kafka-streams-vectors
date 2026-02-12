@@ -103,6 +103,16 @@ curl -X POST http://localhost:8081/api/transactions \
 bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic transactions-suspicious --from-beginning
 ```
 
+### Auto-generate Transactions
+
+Enable the generator to publish one transaction per second:
+
+```bash
+mvn spring-boot:run -Dspring-boot.run.arguments="--app.generator.enabled=true"
+```
+
+You can override the interval with `--app.generator.interval-ms=1000`.
+
 ## Testing Fraud Detection
 
 **Impossible Travel:** Send two transactions with the same card from distant locations in quick succession (e.g., Sao Paulo → New York).

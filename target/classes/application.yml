@@ -30,6 +30,9 @@ app:
       suspicious: transactions-suspicious
       to-score: transactions-to-score
       dlq: transactions-dlq
+  generator:
+    enabled: true
+    interval-ms: 1000
   fraud:
     rules:
       max-travel-speed-kmh: 900.0

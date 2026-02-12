@@ -14,5 +14,3 @@ public record Transaction(
 		Double latitude,
 		Double longitude
 ) {}
-
-
