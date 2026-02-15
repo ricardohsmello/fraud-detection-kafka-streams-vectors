@@ -4,14 +4,17 @@ import com.devnexus.frauddetection.domain.model.ApprovedTransaction;
 import com.devnexus.frauddetection.domain.model.FraudPattern;
 import com.devnexus.frauddetection.domain.model.SuspiciousTransaction;
 import com.devnexus.frauddetection.domain.model.Transaction;
-import com.devnexus.frauddetection.infrastructure.embedding.config.VectorFraudProperties;
-import com.devnexus.frauddetection.infrastructure.embedding.TransactionEmbedder;
+import com.devnexus.frauddetection.infrastructure.embedding.voyage.EmbeddingService;
 import com.devnexus.frauddetection.infrastructure.repository.ApprovedTransactionRepository;
 import com.devnexus.frauddetection.infrastructure.repository.FraudPatternRepository;
 import com.devnexus.frauddetection.infrastructure.repository.SuspiciousTransactionRepository;
+import com.devnexus.frauddetection.infrastructure.streams.config.VectorFraudProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Score;
+import org.springframework.data.domain.SearchResult;
+import org.springframework.data.domain.SearchResults;
+import org.springframework.data.domain.Vector;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
@@ -23,20 +26,20 @@ public class TransactionToScoreConsumer {
 
     private static final Logger log = LoggerFactory.getLogger(TransactionToScoreConsumer.class);
 
-    private final TransactionEmbedder embedder;
+    private final EmbeddingService embeddingService;
     private final FraudPatternRepository fraudPatternRepository;
     private final VectorFraudProperties props;
     private final SuspiciousTransactionRepository suspiciousRepo;
     private final ApprovedTransactionRepository approvedRepo;
 
     public TransactionToScoreConsumer(
-            TransactionEmbedder embedder,
+            EmbeddingService embeddingService,
             FraudPatternRepository fraudPatternRepository,
             VectorFraudProperties props,
             SuspiciousTransactionRepository suspiciousRepo,
             ApprovedTransactionRepository approvedRepo
     ) {
-        this.embedder = embedder;
+        this.embeddingService = embeddingService;
         this.fraudPatternRepository = fraudPatternRepository;
         this.props = props;
         this.suspiciousRepo = suspiciousRepo;
@@ -45,16 +48,7 @@ public class TransactionToScoreConsumer {
 
     @KafkaListener(
             topics = "${app.kafka.topics.to-score}",
-            groupId = "fraud-detection-to-score-consumer",
-            properties = {
-                    "auto.offset.reset=earliest",
-                    "key.deserializer=org.apache.kafka.common.serialization.StringDeserializer",
-                    "value.deserializer=org.springframework.kafka.support.serializer.ErrorHandlingDeserializer",
-                    "spring.deserializer.value.delegate.class=org.springframework.kafka.support.serializer.JsonDeserializer",
-                    "spring.json.use.type.headers=false",
-                    "spring.json.value.default.type=com.devnexus.frauddetection.domain.model.Transaction",
-                    "spring.json.trusted.packages=com.devnexus.frauddetection.domain.model"
-            }
+            groupId = "fraud-detection-to-score-consumer"
     )
     public void onMessage(Transaction tx) {
         if (tx == null) {
@@ -62,7 +56,7 @@ public class TransactionToScoreConsumer {
             return;
         }
 
-        Vector vector = embedder.embed(tx);
+        Vector vector = embeddingService.embed(tx);
 
         SearchResults<FraudPattern> results =
                 fraudPatternRepository.searchTopFraudPatternsByEmbeddingNear(
