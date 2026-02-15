@@ -1,4 +1,4 @@
-package com.devnexus.frauddetection.infrastructure.embedding;
+package com.devnexus.frauddetection.infrastructure.embedding.voyage;
 
 import com.devnexus.frauddetection.domain.model.Transaction;
 

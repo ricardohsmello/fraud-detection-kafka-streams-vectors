@@ -1,4 +1,4 @@
-package com.devnexus.frauddetection.infrastructure.embedding.config;
+package com.devnexus.frauddetection.infrastructure.streams.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
