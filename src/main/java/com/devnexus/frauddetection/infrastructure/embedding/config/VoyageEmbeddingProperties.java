@@ -6,5 +6,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public record VoyageEmbeddingProperties(
         String apiKey,
         String model,
-        String baseUrl
-) {}
+        String baseUrl,
+	 	int outputDimension) {}
