@@ -160,7 +160,7 @@ Content-Type: application/json
   "city": "London",
   "transactionAmount": 12.71,
   "transactionTime": "{{$isoTimestamp}}",
-  "cardNumber": "4444-5555-6666-8888",
+  "cardNumber": "4444-5555-6666-82567",
   "latitude": 51.5072,
   "longitude": -0.1276
 }

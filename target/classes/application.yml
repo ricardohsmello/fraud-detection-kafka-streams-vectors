@@ -41,7 +41,7 @@ app:
     vector:
       top-k: 5
       num-candidates: 50
-      similarity-threshold: 0.85
+      similarity-threshold: 0.92
   embedding:
     voyage:
       api-key: ${VOYAGEAI_API_KEY}
