@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 
 public class SaveSuspiciousTransactionUseCase {
 
-	private static final Logger logger = LoggerFactory.getLogger(SaveSuspiciousTransactionUseCase.class);
+	private static final Logger log = LoggerFactory.getLogger(SaveSuspiciousTransactionUseCase.class);
 
 	private final TransactionPersistencePort persistence;
 
@@ -17,13 +17,13 @@ public class SaveSuspiciousTransactionUseCase {
 
 	public void execute(SuspiciousAlert alert) {
 		if (alert == null || alert.transaction() == null) {
-			logger.warn(">>> Suspicious alert: <null>");
+			log.warn(">>> Suspicious alert: <null>");
 			return;
 		}
 
 		var tx = alert.transaction();
 
-		logger.warn(">>> SUSPICIOUS (RULE): txId={}, userId={}, ruleId={}, desc={}",
+		log.warn(">>> SUSPICIOUS (RULE): txId={}, userId={}, ruleId={}, desc={}",
 				tx.transactionId(),
 				tx.userId(),
 				alert.ruleId(),

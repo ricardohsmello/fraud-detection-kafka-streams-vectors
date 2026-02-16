@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 
 public class ProduceTransactionUseCase {
 
-	private final Logger logger = LoggerFactory.getLogger(ProduceTransactionUseCase.class);
+	private static final Logger log = LoggerFactory.getLogger(ProduceTransactionUseCase.class);
 
 	private final TransactionProducerPort transactionProducerPort;
 
@@ -16,7 +16,7 @@ public class ProduceTransactionUseCase {
 	}
 
 	public void execute(TransactionRequest transactionRequest) {
-		logger.info("Sending transaction message: {}", transactionRequest);
+		log.info("Sending transaction message: {}", transactionRequest);
 		transactionProducerPort.send(transactionRequest.toTransaction());
 	}
 }

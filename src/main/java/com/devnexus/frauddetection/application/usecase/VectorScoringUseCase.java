@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 public class VectorScoringUseCase {
 
-    private static final Logger logger = LoggerFactory.getLogger(VectorScoringUseCase.class);
+    private static final Logger log = LoggerFactory.getLogger(VectorScoringUseCase.class);
 
     private final TransactionEmbedderPort embedder;
     private final FraudPatternSearchPort fraudPatternSearch;
@@ -37,12 +37,12 @@ public class VectorScoringUseCase {
         if (result.matchFound()) {
             persistence.saveSuspiciousFromVector(transaction, result, similarityThreshold);
 
-            logger.warn(">>> VECTOR FLAGGED: txId={}, topScore={}, threshold={}, matches={}",
+            log.warn(">>> VECTOR FLAGGED: txId={}, topScore={}, threshold={}, matches={}",
                     transaction.transactionId(), result.topScore(), similarityThreshold, result.matches().size());
         } else {
             persistence.saveApproved(transaction);
 
-            logger.info(">>> VECTOR APPROVED: txId={}, topScore={}, threshold={}",
+            log.info(">>> VECTOR APPROVED: txId={}, topScore={}, threshold={}",
                     transaction.transactionId(), result.topScore(), similarityThreshold);
         }
     }

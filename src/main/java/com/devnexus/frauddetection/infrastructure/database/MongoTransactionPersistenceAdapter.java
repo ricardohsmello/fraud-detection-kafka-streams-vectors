@@ -1,6 +1,7 @@
 package com.devnexus.frauddetection.infrastructure.database;
 
 import com.devnexus.frauddetection.domain.model.ScoringResult;
+import com.devnexus.frauddetection.domain.model.VectorMatch;
 import com.devnexus.frauddetection.domain.model.SuspiciousAlert;
 import com.devnexus.frauddetection.domain.model.Transaction;
 import com.devnexus.frauddetection.domain.port.TransactionPersistencePort;
@@ -18,7 +19,7 @@ import java.util.List;
 @Component
 public class MongoTransactionPersistenceAdapter implements TransactionPersistencePort {
 
-    private final Logger logger = LoggerFactory.getLogger(MongoTransactionPersistenceAdapter.class);
+    private static final Logger log = LoggerFactory.getLogger(MongoTransactionPersistenceAdapter.class);
     private final ApprovedTransactionRepository approvedRepo;
     private final SuspiciousTransactionRepository suspiciousRepo;
 
@@ -34,14 +35,12 @@ public class MongoTransactionPersistenceAdapter implements TransactionPersistenc
     public void saveApproved(Transaction transaction) {
         approvedRepo.save(new ApprovedTransaction(null, transaction, Instant.now()));
 
-        logger.info("Approved transaction saved.");
+        log.info("Approved transaction saved.");
     }
 
     @Override
     public void saveSuspiciousFromVector(Transaction transaction, ScoringResult scoringResult, double threshold) {
-        List<SuspiciousTransaction.VectorMatch> matches = scoringResult.matches().stream()
-                .map(m -> new SuspiciousTransaction.VectorMatch(m.patternId(), m.score()))
-                .toList();
+        List<VectorMatch> matches = scoringResult.matches();
 
         SuspiciousTransaction doc = new SuspiciousTransaction(
                 null,
@@ -57,7 +56,7 @@ public class MongoTransactionPersistenceAdapter implements TransactionPersistenc
 
         suspiciousRepo.save(doc);
 
-        logger.info("Suspicious transaction from vector similarity saved.");
+        log.info("Suspicious transaction from vector similarity saved.");
     }
 
     @Override
@@ -76,6 +75,6 @@ public class MongoTransactionPersistenceAdapter implements TransactionPersistenc
 
         suspiciousRepo.save(doc);
 
-        logger.info("Suspicious transaction from rules saved.");
+        log.info("Suspicious transaction from rules saved.");
     }
 }

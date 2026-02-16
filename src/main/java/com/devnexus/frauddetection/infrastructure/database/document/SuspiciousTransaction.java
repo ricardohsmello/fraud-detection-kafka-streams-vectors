@@ -4,6 +4,8 @@ import com.devnexus.frauddetection.domain.model.Transaction;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.devnexus.frauddetection.domain.model.VectorMatch;
+
 import java.time.Instant;
 import java.util.List;
 
@@ -20,5 +22,4 @@ public record SuspiciousTransaction(
         Instant detectedAt
 ) {
         public enum DetectionType { RULE, VECTOR }
-        public record VectorMatch(String patternId, double score) {}
 }

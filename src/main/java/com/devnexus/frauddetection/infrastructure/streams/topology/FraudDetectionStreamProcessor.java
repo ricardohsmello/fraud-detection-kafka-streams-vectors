@@ -2,7 +2,6 @@ package com.devnexus.frauddetection.infrastructure.streams.topology;
 
 import com.devnexus.frauddetection.domain.model.FraudDetectionState;
 import com.devnexus.frauddetection.domain.model.SuspiciousAlert;
-import com.devnexus.frauddetection.domain.model.SuspiciousAlert;
 import com.devnexus.frauddetection.domain.model.Transaction;
 import com.devnexus.frauddetection.domain.rules.ImpossibleTravelValidator;
 import com.devnexus.frauddetection.domain.rules.VelocityCheckValidator;

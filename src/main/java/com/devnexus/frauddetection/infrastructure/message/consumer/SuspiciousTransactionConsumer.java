@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class SuspiciousTransactionConsumer {
 
-    private static final Logger logger = LoggerFactory.getLogger(SuspiciousTransactionConsumer.class);
+    private static final Logger log = LoggerFactory.getLogger(SuspiciousTransactionConsumer.class);
 
     private final SaveSuspiciousTransactionUseCase saveSuspiciousTransactionUseCase;
 

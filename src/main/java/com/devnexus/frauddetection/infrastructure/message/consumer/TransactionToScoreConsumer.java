@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class TransactionToScoreConsumer  {
 
-    private final Logger logger = LoggerFactory.getLogger(TransactionToScoreConsumer.class);
+    private static final Logger log = LoggerFactory.getLogger(TransactionToScoreConsumer.class);
 
     private final VectorScoringUseCase vectorScoringUseCase;
 
@@ -24,7 +24,7 @@ public class TransactionToScoreConsumer  {
     )
     public void onMessage(Transaction tx) {
         if (tx == null) {
-            logger.info(">>> TO SCORE: <null tx>");
+            log.info(">>> TO SCORE: <null tx>");
             return;
         }
 
