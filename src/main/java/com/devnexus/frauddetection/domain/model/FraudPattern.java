@@ -6,10 +6,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
 
-@Document("fraud_transactions_seeded")
+@Document("fraud_patterns")
 public record FraudPattern(
         @Id String id,
-        boolean seeded,
+        boolean fraud,
         Transaction transaction,
         String ruleId,
         String description,

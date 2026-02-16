@@ -7,7 +7,7 @@ import com.devnexus.frauddetection.domain.model.Transaction;
 import com.devnexus.frauddetection.infrastructure.embedding.config.VectorFraudProperties;
 import com.devnexus.frauddetection.infrastructure.embedding.TransactionEmbedder;
 import com.devnexus.frauddetection.infrastructure.repository.ApprovedTransactionRepository;
-import com.devnexus.frauddetection.infrastructure.repository.FraudSeededTransactionRepository;
+import com.devnexus.frauddetection.infrastructure.repository.FraudPatternsRepository;
 import com.devnexus.frauddetection.infrastructure.repository.SuspiciousTransactionRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,14 +24,14 @@ public class TransactionToScoreConsumer {
     private static final Logger log = LoggerFactory.getLogger(TransactionToScoreConsumer.class);
 
     private final TransactionEmbedder embedder;
-    private final FraudSeededTransactionRepository fraudPatternRepository;
+    private final FraudPatternsRepository fraudPatternRepository;
     private final VectorFraudProperties props;
     private final SuspiciousTransactionRepository suspiciousRepo;
     private final ApprovedTransactionRepository approvedRepo;
 
     public TransactionToScoreConsumer(
             TransactionEmbedder embedder,
-            FraudSeededTransactionRepository fraudPatternRepository,
+            FraudPatternsRepository fraudPatternRepository,
             VectorFraudProperties props,
             SuspiciousTransactionRepository suspiciousRepo,
             ApprovedTransactionRepository approvedRepo
@@ -66,30 +66,32 @@ public class TransactionToScoreConsumer {
         log.info(">>> TO SCORE: tx={}, embedding size={}", tx, vector.size());
 
         SearchResults<FraudPattern> results =
-                fraudPatternRepository.searchTopFraudPatternsByMerchantAndEmbeddingNear(
-                        tx.merchant(),
+                fraudPatternRepository.searchTopFraudPatternsByEmbeddingNear(
                         vector,
                         Score.of(props.similarityThreshold())
                 );
 
-
         List<SearchResult<FraudPattern>> content = results.getContent();
 
-        boolean hasAny = !content.isEmpty();
-        double topScore = hasAny ? content.getFirst().getScore().getValue() : 0.0;
-
-        if (hasAny) {
-            log.info(">>> TO SCORE: top fraud pattern ruleId={}, score={}",
-                    content.getFirst().getContent().ruleId(),
-                    topScore
-            );
-        } else {
-            log.info(">>> TO SCORE: no fraud patterns found for merchant={}", tx.merchant());
+        if (content.isEmpty()) {
+            approvedRepo.save(new ApprovedTransaction(null, tx, Instant.now()));
+            log.info(">>> VECTOR APPROVED: txId={}, no similar patterns found",
+                    tx.transactionId());
+            return;
         }
 
-        boolean similar = topScore >= props.similarityThreshold();
+        // safe now
+        double topScore = content.get(0).getScore().getValue();
 
-        if (similar) {
+        long fraudCount = content.stream()
+                .filter(r -> r.getContent().fraud())
+                .count();
+
+        long notFraudCount = content.size() - fraudCount;
+
+        boolean classifiedFraud = fraudCount >= notFraudCount;
+
+        if (classifiedFraud) {
             List<SuspiciousTransaction.VectorMatch> matches = content.stream()
                     .map(r -> new SuspiciousTransaction.VectorMatch(
                             r.getContent().id(),
@@ -111,13 +113,21 @@ public class TransactionToScoreConsumer {
 
             suspiciousRepo.save(doc);
 
-            log.warn(">>> VECTOR FLAGGED: txId={}, topScore={}, threshold={}, matches={}",
-                    tx.transactionId(), topScore, props.similarityThreshold(), matches.size());
+            log.warn(">>> VECTOR FLAGGED: txId={}, topScore={}, threshold={}, matches={}, fraudVotes={}, safeVotes={}",
+                    tx.transactionId(),
+                    topScore,
+                    props.similarityThreshold(),
+                    matches.size(),
+                    fraudCount,
+                    notFraudCount);
         } else {
             approvedRepo.save(new ApprovedTransaction(null, tx, Instant.now()));
-            log.info(">>> VECTOR APPROVED: txId={}, topScore={}, threshold={}",
-                    tx.transactionId(), topScore, props.similarityThreshold());
 
+            log.info(">>> VECTOR APPROVED: txId={}, fraudVotes={}, safeVotes={}, threshold={}",
+                    tx.transactionId(),
+                    fraudCount,
+                    notFraudCount,
+                    props.similarityThreshold());
         }
     }
 }

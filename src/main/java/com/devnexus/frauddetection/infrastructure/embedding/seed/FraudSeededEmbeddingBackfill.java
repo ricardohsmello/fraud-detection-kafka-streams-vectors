@@ -2,7 +2,7 @@ package com.devnexus.frauddetection.infrastructure.embedding.seed;
 
 import com.devnexus.frauddetection.domain.model.FraudPattern;
 import com.devnexus.frauddetection.infrastructure.embedding.TransactionEmbedder;
-import com.devnexus.frauddetection.infrastructure.repository.FraudSeededTransactionRepository;
+import com.devnexus.frauddetection.infrastructure.repository.FraudPatternsRepository;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,10 +16,10 @@ public class FraudSeededEmbeddingBackfill implements CommandLineRunner {
 
     private static final Logger log = LoggerFactory.getLogger(FraudSeededEmbeddingBackfill.class);
 
-    private final FraudSeededTransactionRepository repo;
+    private final FraudPatternsRepository repo;
     private final TransactionEmbedder embedder;
 
-    public FraudSeededEmbeddingBackfill(FraudSeededTransactionRepository repo, TransactionEmbedder embedder) {
+    public FraudSeededEmbeddingBackfill(FraudPatternsRepository repo, TransactionEmbedder embedder) {
         this.repo = repo;
         this.embedder = embedder;
     }
@@ -43,7 +43,7 @@ public class FraudSeededEmbeddingBackfill implements CommandLineRunner {
 
             FraudPattern updated = new FraudPattern(
                     d.id(),
-                    d.seeded(),
+                    d.fraud(),
                     d.transaction(),
                     d.ruleId(),
                     d.description(),
