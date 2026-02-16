@@ -11,11 +11,14 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface FraudPatternRepository extends MongoRepository<FraudPattern, String> {
 
-    // IMPORTANT: limit and numCandidates must be parseable ints on SD MongoDB 5.0.2
     @VectorSearch(
             indexName = "fraud_patterns_vector_index",
             limit = "10",
             numCandidates = "200"
     )
-    SearchResults<FraudPattern> searchTopFraudPatternsByEmbeddingNear(Vector vector, Score score);
+    SearchResults<FraudPattern> searchTopFraudPatternsByEmbeddingNear(
+            Vector vector,
+            Score score
+    );
 }
+

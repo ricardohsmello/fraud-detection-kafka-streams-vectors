@@ -4,14 +4,15 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.domain.Vector;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.math.BigDecimal;
+import java.time.Instant;
 
 @Document("fraud_patterns")
 public record FraudPattern(
         @Id String id,
-        String patternName,
-        String merchant,
-        String city,
-        BigDecimal typicalAmount,
+        boolean fraud,
+        Transaction transaction,
+        String ruleId,
+        String description,
+        Instant detectedAt,
         Vector embedding
 ) {}

@@ -31,7 +31,7 @@ app:
       to-score: transactions-to-score
       dlq: transactions-dlq
   generator:
-    enabled: true
+    enabled: false
     interval-ms: 1000
   fraud:
     rules:
@@ -41,9 +41,9 @@ app:
     vector:
       top-k: 5
       num-candidates: 50
-      similarity-threshold: 0.85
+      similarity-threshold: 0.95
   embedding:
     voyage:
       api-key: ${VOYAGEAI_API_KEY}
-      model: voyage-3-lite
+      model: voyage-finance-2
       base-url: https://api.voyageai.com

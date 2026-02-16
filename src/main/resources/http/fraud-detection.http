@@ -62,7 +62,7 @@ Content-Type: application/json
   "city": "London",
   "transactionAmount": 450.00,
   "transactionTime": "{{$isoTimestamp}}",
-  "cardNumber": "1111-2222-3333-4444",
+  "cardNumber": "1111-2222-3333-4497",
   "latitude": 51.4994,
   "longitude": -0.1632
 }
@@ -78,7 +78,7 @@ Content-Type: application/json
   "city": "Tokyo",
   "transactionAmount": 89000.00,
   "transactionTime": "{{$isoTimestamp}}",
-  "cardNumber": "1111-2222-3333-4444",
+  "cardNumber": "1111-2222-3333-4478",
   "latitude": 35.6762,
   "longitude": 139.6503
 }
@@ -147,4 +147,20 @@ Content-Type: application/json
   "cardNumber": "9999-8888-7777-6666",
   "latitude": 25.7617,
   "longitude": -80.1918
+}
+
+### 10. Vector search test = trigger a fraud by matching similar fraud transactions
+POST {{baseUrl}}/api/transactions
+Content-Type: application/json
+
+{
+  "transactionId": "TXN-006",
+  "userId": "USR-12345",
+  "merchant": "Gas Station",
+  "city": "London",
+  "transactionAmount": 12.71,
+  "transactionTime": "{{$isoTimestamp}}",
+  "cardNumber": "4444-5555-6666-82567",
+  "latitude": 51.5072,
+  "longitude": -0.1276
 }
