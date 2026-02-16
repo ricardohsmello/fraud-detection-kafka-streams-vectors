@@ -43,7 +43,7 @@ app:
     consumers:
       suspicious:
         group-id: transaction-suspicious-consumer
-        value-type: com.devnexus.frauddetection.domain.model.SuspiciousTransactionEvent
+        value-type: com.devnexus.frauddetection.domain.model.SuspiciousAlert
   generator:
     enabled: false
     interval-ms: 1000
