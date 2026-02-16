@@ -1,7 +1,7 @@
 package com.devnexus.frauddetection.infrastructure.database;
 
 import com.devnexus.frauddetection.domain.model.ScoringResult;
-import com.devnexus.frauddetection.domain.model.SuspiciousTransactionEvent;
+import com.devnexus.frauddetection.domain.model.SuspiciousAlert;
 import com.devnexus.frauddetection.domain.model.Transaction;
 import com.devnexus.frauddetection.domain.port.TransactionPersistencePort;
 import com.devnexus.frauddetection.infrastructure.database.document.ApprovedTransaction;
@@ -61,17 +61,17 @@ public class MongoTransactionPersistenceAdapter implements TransactionPersistenc
     }
 
     @Override
-    public void saveSuspiciousFromRule(SuspiciousTransactionEvent event) {
+    public void saveSuspiciousFromRule(SuspiciousAlert alert) {
         SuspiciousTransaction doc = new SuspiciousTransaction(
                 null,
-                event.transaction(),
+                alert.transaction(),
                 SuspiciousTransaction.DetectionType.RULE,
-                event.ruleId(),
-                event.description(),
+                alert.ruleId(),
+                alert.description(),
                 null,
                 null,
                 null,
-                event.detectedAt() != null ? event.detectedAt() : Instant.now()
+                alert.detectedAt() != null ? alert.detectedAt() : Instant.now()
         );
 
         suspiciousRepo.save(doc);

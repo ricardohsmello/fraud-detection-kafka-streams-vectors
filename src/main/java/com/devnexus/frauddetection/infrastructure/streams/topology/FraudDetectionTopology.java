@@ -1,7 +1,7 @@
 package com.devnexus.frauddetection.infrastructure.streams.topology;
 
 import com.devnexus.frauddetection.domain.model.FraudDetectionState;
-import com.devnexus.frauddetection.domain.model.SuspiciousTransactionEvent;
+import com.devnexus.frauddetection.domain.model.SuspiciousAlert;
 import com.devnexus.frauddetection.domain.model.Transaction;
 import com.devnexus.frauddetection.domain.rules.ImpossibleTravelValidator;
 import com.devnexus.frauddetection.domain.rules.VelocityCheckValidator;
@@ -45,8 +45,8 @@ public class FraudDetectionTopology {
     ) {
         Serde<Transaction> transactionSerde = jsonSerde.forClass(Transaction.class);
         Serde<FraudDetectionState> stateSerde = jsonSerde.forClass(FraudDetectionState.class);
-        Serde<SuspiciousTransactionEvent> suspiciousEventSerde =
-                jsonSerde.forClass(SuspiciousTransactionEvent.class);
+        Serde<SuspiciousAlert> suspiciousEventSerde =
+                jsonSerde.forClass(SuspiciousAlert.class);
 
         return processor.buildTopology(
                 builder,

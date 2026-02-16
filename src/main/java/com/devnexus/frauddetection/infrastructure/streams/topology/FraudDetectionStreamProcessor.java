@@ -2,7 +2,7 @@ package com.devnexus.frauddetection.infrastructure.streams.topology;
 
 import com.devnexus.frauddetection.domain.model.FraudDetectionState;
 import com.devnexus.frauddetection.domain.model.SuspiciousAlert;
-import com.devnexus.frauddetection.domain.model.SuspiciousTransactionEvent;
+import com.devnexus.frauddetection.domain.model.SuspiciousAlert;
 import com.devnexus.frauddetection.domain.model.Transaction;
 import com.devnexus.frauddetection.domain.rules.ImpossibleTravelValidator;
 import com.devnexus.frauddetection.domain.rules.VelocityCheckValidator;
@@ -45,7 +45,7 @@ public class FraudDetectionStreamProcessor {
             String toScoreTopic,
             Serde<Transaction> transactionSerde,
             Serde<FraudDetectionState> stateSerde,
-            Serde<SuspiciousTransactionEvent> suspiciousEventSerde
+            Serde<SuspiciousAlert> suspiciousEventSerde
     ) {
         KStream<String, Transaction> stream = builder.stream(
                 transactionsTopic,
@@ -99,7 +99,7 @@ public class FraudDetectionStreamProcessor {
             String suspiciousTopic,
             String toScoreTopic,
             Serde<Transaction> transactionSerde,
-            Serde<SuspiciousTransactionEvent> suspiciousEventSerde
+            Serde<SuspiciousAlert> suspiciousEventSerde
     ) {
         processedStream
                 .split(Named.as("fraud-"))
@@ -107,7 +107,7 @@ public class FraudDetectionStreamProcessor {
                         (cardNumber, state) -> state.hasFraudAlert(),
                         Branched.withConsumer(fraudStream ->
                                 fraudStream
-                                        .mapValues(state -> new SuspiciousTransactionEvent(
+                                        .mapValues(state -> new SuspiciousAlert(
                                                 state.lastTransaction(),
                                                 state.suspiciousAlert().ruleId(),
                                                 state.suspiciousAlert().description(),
