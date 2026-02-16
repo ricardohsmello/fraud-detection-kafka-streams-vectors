@@ -1,7 +1,7 @@
 package com.devnexus.frauddetection.infrastructure.message.consumer;
 
 import com.devnexus.frauddetection.application.usecase.SaveSuspiciousTransactionUseCase;
-import com.devnexus.frauddetection.domain.model.SuspiciousTransactionEvent;
+import com.devnexus.frauddetection.domain.model.SuspiciousAlert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -25,7 +25,7 @@ public class SuspiciousTransactionConsumer {
                     "spring.json.value.default.type=${app.kafka.consumers.suspicious.value-type}"
             }
     )
-    public void onMessage(SuspiciousTransactionEvent evt) {
+    public void onMessage(SuspiciousAlert evt) {
         saveSuspiciousTransactionUseCase.execute(evt);
     }
 }

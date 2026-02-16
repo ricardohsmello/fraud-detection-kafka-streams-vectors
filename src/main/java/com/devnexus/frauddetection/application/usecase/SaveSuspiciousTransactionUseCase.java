@@ -1,6 +1,6 @@
 package com.devnexus.frauddetection.application.usecase;
 
-import com.devnexus.frauddetection.domain.model.SuspiciousTransactionEvent;
+import com.devnexus.frauddetection.domain.model.SuspiciousAlert;
 import com.devnexus.frauddetection.domain.port.TransactionPersistencePort;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,23 +15,21 @@ public class SaveSuspiciousTransactionUseCase {
 		this.persistence = persistence;
 	}
 
-	public void execute(SuspiciousTransactionEvent event) {
-//		saveSuspiciousTransactionPort.save(alert);
-
-		if (event == null || event.transaction() == null) {
-			logger.warn(">>> Suspicious event: <null>");
+	public void execute(SuspiciousAlert alert) {
+		if (alert == null || alert.transaction() == null) {
+			logger.warn(">>> Suspicious alert: <null>");
 			return;
 		}
 
-		var tx = event.transaction();
+		var tx = alert.transaction();
 
 		logger.warn(">>> SUSPICIOUS (RULE): txId={}, userId={}, ruleId={}, desc={}",
 				tx.transactionId(),
 				tx.userId(),
-				event.ruleId(),
-				event.description()
+				alert.ruleId(),
+				alert.description()
 		);
 
-		persistence.saveSuspiciousFromRule(event);
+		persistence.saveSuspiciousFromRule(alert);
 	}
 }
