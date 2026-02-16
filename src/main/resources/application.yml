@@ -31,7 +31,7 @@ app:
       to-score: transactions-to-score
       dlq: transactions-dlq
   generator:
-    enabled: true
+    enabled: false
     interval-ms: 1000
   fraud:
     rules:

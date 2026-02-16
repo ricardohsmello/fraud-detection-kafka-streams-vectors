@@ -7,7 +7,7 @@ import com.devnexus.frauddetection.domain.model.Transaction;
 import com.devnexus.frauddetection.infrastructure.embedding.config.VectorFraudProperties;
 import com.devnexus.frauddetection.infrastructure.embedding.TransactionEmbedder;
 import com.devnexus.frauddetection.infrastructure.repository.ApprovedTransactionRepository;
-import com.devnexus.frauddetection.infrastructure.repository.FraudPatternRepository;
+import com.devnexus.frauddetection.infrastructure.repository.FraudSeededTransactionRepository;
 import com.devnexus.frauddetection.infrastructure.repository.SuspiciousTransactionRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,14 +24,14 @@ public class TransactionToScoreConsumer {
     private static final Logger log = LoggerFactory.getLogger(TransactionToScoreConsumer.class);
 
     private final TransactionEmbedder embedder;
-    private final FraudPatternRepository fraudPatternRepository;
+    private final FraudSeededTransactionRepository fraudPatternRepository;
     private final VectorFraudProperties props;
     private final SuspiciousTransactionRepository suspiciousRepo;
     private final ApprovedTransactionRepository approvedRepo;
 
     public TransactionToScoreConsumer(
             TransactionEmbedder embedder,
-            FraudPatternRepository fraudPatternRepository,
+            FraudSeededTransactionRepository fraudPatternRepository,
             VectorFraudProperties props,
             SuspiciousTransactionRepository suspiciousRepo,
             ApprovedTransactionRepository approvedRepo
@@ -63,6 +63,7 @@ public class TransactionToScoreConsumer {
         }
 
         Vector vector = embedder.embed(tx);
+        log.info(">>> TO SCORE: tx={}, embedding={}", tx, vector.toDoubleArray());
 
         SearchResults<FraudPattern> results =
                 fraudPatternRepository.searchTopFraudPatternsByEmbeddingNear(
@@ -72,6 +73,7 @@ public class TransactionToScoreConsumer {
 
 
         List<SearchResult<FraudPattern>> content = results.getContent();
+        log.info(">>> TO SCORE: fraud pattern={}", content.getFirst().getContent().ruleId());
 
         boolean similar = !content.isEmpty();
         double topScore = similar ? content.getFirst().getScore().getValue() : 0.0;
