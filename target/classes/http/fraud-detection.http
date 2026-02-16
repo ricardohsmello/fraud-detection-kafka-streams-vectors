@@ -148,3 +148,19 @@ Content-Type: application/json
   "latitude": 25.7617,
   "longitude": -80.1918
 }
+
+### 10. Vector search test = trigger a fraud by matching similar fraud transactions
+POST {{baseUrl}}/api/transactions
+Content-Type: application/json
+
+{
+  "transactionId": "TXN-005",
+  "userId": "USR-12345",
+  "merchant": "Gas Station",
+  "city": "London",
+  "transactionAmount": 12.71,
+  "transactionTime": "{{$isoTimestamp}}",
+  "cardNumber": "4444-5555-6666-7777",
+  "latitude": 51.5072,
+  "longitude": -0.1276
+}

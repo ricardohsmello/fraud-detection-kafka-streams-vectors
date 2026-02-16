@@ -63,24 +63,38 @@ public class TransactionToScoreConsumer {
         }
 
         Vector vector = embedder.embed(tx);
-        log.info(">>> TO SCORE: tx={}, embedding={}", tx, vector.toDoubleArray());
+        log.info(">>> TO SCORE: tx={}, embedding size={}", tx, vector.size());
 
         SearchResults<FraudPattern> results =
-                fraudPatternRepository.searchTopFraudPatternsByEmbeddingNear(
+                fraudPatternRepository.searchTopFraudPatternsByMerchantAndEmbeddingNear(
+                        tx.merchant(),
                         vector,
                         Score.of(props.similarityThreshold())
                 );
 
 
         List<SearchResult<FraudPattern>> content = results.getContent();
-        log.info(">>> TO SCORE: fraud pattern={}", content.getFirst().getContent().ruleId());
 
-        boolean similar = !content.isEmpty();
-        double topScore = similar ? content.getFirst().getScore().getValue() : 0.0;
+        boolean hasAny = !content.isEmpty();
+        double topScore = hasAny ? content.getFirst().getScore().getValue() : 0.0;
+
+        if (hasAny) {
+            log.info(">>> TO SCORE: top fraud pattern ruleId={}, score={}",
+                    content.getFirst().getContent().ruleId(),
+                    topScore
+            );
+        } else {
+            log.info(">>> TO SCORE: no fraud patterns found for merchant={}", tx.merchant());
+        }
+
+        boolean similar = topScore >= props.similarityThreshold();
 
         if (similar) {
             List<SuspiciousTransaction.VectorMatch> matches = content.stream()
-                    .map(r -> new SuspiciousTransaction.VectorMatch(r.getContent().id(), r.getScore().getValue()))
+                    .map(r -> new SuspiciousTransaction.VectorMatch(
+                            r.getContent().id(),
+                            r.getScore().getValue()
+                    ))
                     .toList();
 
             SuspiciousTransaction doc = new SuspiciousTransaction(

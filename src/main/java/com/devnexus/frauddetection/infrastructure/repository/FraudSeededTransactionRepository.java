@@ -10,10 +10,17 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface FraudSeededTransactionRepository extends MongoRepository<FraudPattern, String> {
+
     @VectorSearch(
             indexName = "fraud_patterns_vector_index",
+            filter = "{'transaction.merchant': ?0}",
             limit = "10",
             numCandidates = "200"
     )
-    SearchResults<FraudPattern> searchTopFraudPatternsByEmbeddingNear(Vector vector, Score score);
+    SearchResults<FraudPattern> searchTopFraudPatternsByMerchantAndEmbeddingNear(
+            String merchant,
+            Vector vector,
+            Score score
+    );
 }
+
