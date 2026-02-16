@@ -45,5 +45,5 @@ app:
   embedding:
     voyage:
       api-key: ${VOYAGEAI_API_KEY}
-      model: voyage-3-lite
+      model: voyage-finance-2
       base-url: https://api.voyageai.com

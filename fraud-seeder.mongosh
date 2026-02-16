@@ -1,0 +1,136 @@
+// Run with:
+// mongosh "mongodb+srv://<user>:<pass>@<cluster>/?appName=Devnexus" --file fraud-seeder.mongosh
+
+const COLL = "fraud_transactions_seeded";
+const DB_NAME = "fraud-detection";
+const DB = db.getSiblingDB(DB_NAME);
+
+const CITIES = [
+  { name: "Seattle", country: "US", lat: 47.6101, lon: -122.2015, merchants: ["Starbucks", "REI", "Target"] },
+  { name: "Austin", country: "US", lat: 30.2672, lon: -97.7431, merchants: ["Whole Foods", "Trader Joe's", "H-E-B"] },
+  { name: "London", country: "GB", lat: 51.5072, lon: -0.1276, merchants: ["Tesco", "Harrods", "Marks & Spencer"] },
+  { name: "Manchester", country: "GB", lat: 53.4808, lon: -2.2426, merchants: ["Tesco", "Boots", "Pret A Manger"] },
+  { name: "Tokyo", country: "JP", lat: 35.6762, lon: 139.6503, merchants: ["Yodobashi Camera", "FamilyMart", "Uniqlo"] },
+  { name: "Osaka", country: "JP", lat: 34.6937, lon: 135.5023, merchants: ["Lawson", "Bic Camera", "Don Quijote"] }
+];
+
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function intBetween(min, maxInclusive) { return Math.floor(Math.random() * (maxInclusive - min + 1)) + min; }
+function moneyBetween(min, max) { return Math.round((min + Math.random() * (max - min)) * 100) / 100; }
+
+function randomCard() {
+  return `${intBetween(4000, 4999)}-${intBetween(1000, 9999)}-${intBetween(1000, 9999)}-${intBetween(1000, 9999)}`;
+}
+function randomUserId() { return `USR-${intBetween(100, 999)}`; }
+function randomTxId() { return `TXN-${intBetween(100000, 999999)}`; }
+
+function isoNowMinusSeconds(deltaSeconds) {
+  return new Date(Date.now() - (deltaSeconds * 1000));
+}
+
+function atLocalLateNight(baseDate = new Date()) {
+  const d = new Date(baseDate);
+  d.setHours(intBetween(0, 4), intBetween(0, 59), intBetween(0, 59), 0);
+  return d;
+}
+
+function makeMicroTestTx() {
+  const country = pick(["US", "GB"]);
+  const city = pick(CITIES.filter(c => c.country === country));
+  const merchant = pick(["Grocery Store", "Gas Station"]);
+
+  return {
+    transactionId: randomTxId(),
+    userId: randomUserId(),
+    merchant,
+    city: city.name,
+    transactionAmount: moneyBetween(3.00, 18.00),
+    transactionTime: isoNowMinusSeconds(intBetween(60, 60 * 60 * 24)),
+    cardNumber: randomCard(),
+    latitude: city.lat,
+    longitude: city.lon
+  };
+}
+
+function makeHighValueElectronicsTx() {
+  const city = (Math.random() < 0.7)
+    ? pick(CITIES.filter(c => c.country === "JP"))
+    : pick(CITIES);
+
+  let merchant = "Online Electronics";
+  if (city.country === "JP") {
+    const preferred = city.merchants.filter(m => m.includes("Camera") || m.includes("Don Quijote") || m.includes("Bic"));
+    merchant = pick(preferred.length ? preferred : city.merchants);
+  }
+
+  return {
+    transactionId: randomTxId(),
+    userId: randomUserId(),
+    merchant,
+    city: city.name,
+    transactionAmount: moneyBetween(800.00, 4200.00),
+    transactionTime: isoNowMinusSeconds(intBetween(60, 60 * 60 * 24 * 3)),
+    cardNumber: randomCard(),
+    latitude: city.lat,
+    longitude: city.lon
+  };
+}
+
+function makeCryptoLateNightTx() {
+  const city = pick(CITIES.filter(c => c.country === "GB" || c.country === "US"));
+  return {
+    transactionId: randomTxId(),
+    userId: randomUserId(),
+    merchant: "Crypto Exchange",
+    city: city.name,
+    transactionAmount: moneyBetween(120.00, 1500.00),
+    transactionTime: atLocalLateNight(new Date()),
+    cardNumber: randomCard(),
+    latitude: city.lat,
+    longitude: city.lon
+  };
+}
+
+function wrapFraudEvent(tx, patternName, description) {
+  return {
+    seeded: true,
+    transaction: tx,
+    ruleId: patternName,
+    description,
+    detectedAt: new Date()
+  };
+}
+
+const MICRO_COUNT = 100;
+const ELECTRONICS_COUNT = 100;
+const CRYPTO_COUNT = 100;
+const DUPLICATE_RATE = 0.12;
+
+const docs = [];
+function shouldDuplicate() { return Math.random() < DUPLICATE_RATE; }
+
+for (let i = 0; i < MICRO_COUNT; i++) {
+  const tx = makeMicroTestTx();
+  docs.push(wrapFraudEvent(tx, "MICRO_TEST", `${tx.merchant} micro-test for small amount (${tx.transactionAmount})`));
+  if (shouldDuplicate()) docs.push(wrapFraudEvent(tx, "MICRO_TEST", `Repeat micro-test attempt detected (${tx.merchant}, ${tx.transactionAmount})`));
+}
+
+for (let i = 0; i < ELECTRONICS_COUNT; i++) {
+  const tx = makeHighValueElectronicsTx();
+  docs.push(wrapFraudEvent(tx, "HIGH_VALUE_ELECTRONICS", `High-value electronics purchase at ${tx.merchant} (${tx.transactionAmount})`));
+  if (shouldDuplicate()) docs.push(wrapFraudEvent(tx, "HIGH_VALUE_ELECTRONICS", `Repeat attempt for high-value electronics (${tx.merchant}, ${tx.transactionAmount})`));
+}
+
+for (let i = 0; i < CRYPTO_COUNT; i++) {
+  const tx = makeCryptoLateNightTx();
+  docs.push(wrapFraudEvent(tx, "CRYPTO_EXCHANGE_LATE_NIGHT", `Late-night crypto exchange activity (${tx.transactionAmount})`));
+  if (shouldDuplicate()) docs.push(wrapFraudEvent(tx, "CRYPTO_EXCHANGE_LATE_NIGHT", `Repeat late-night crypto attempt (${tx.transactionAmount})`));
+}
+
+print(`Using DB: ${DB.getName()}`);
+print(`Inserting ${docs.length} docs into ${DB.getName()}.${COLL}...`);
+
+DB.getCollection(COLL).insertMany(docs);
+
+print("Done.");
+print(`Count now (seeded=true): ${DB.getCollection(COLL).countDocuments({ seeded: true })}`);

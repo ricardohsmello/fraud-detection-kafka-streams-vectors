@@ -50,7 +50,8 @@ public class TransactionGenerator {
     // “Random merchant” pool (intentionally generic)
     private static final List<String> RANDOM_MERCHANTS = List.of(
             "ATM Withdrawal", "Luxury Boutique", "Crypto Exchange", "Online Electronics",
-            "Airline Tickets", "Hotel Booking", "Car Rental", "Jewellery Store", "Late-Night Delivery"
+            "Airline Tickets", "Hotel Booking", "Car Rental", "Jewellery Store", "Late-Night Delivery",
+            "Grocery Store", "Pharmacy", "Gas Station", "Fast Food Restaurant", "Bookstore"
     );
 
     private final TransactionProducer producer;
