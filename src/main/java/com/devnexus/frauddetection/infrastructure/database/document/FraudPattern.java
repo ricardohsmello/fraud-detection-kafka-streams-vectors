@@ -1,4 +1,4 @@
-package com.devnexus.frauddetection.domain.model;
+package com.devnexus.frauddetection.infrastructure.database.document;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.domain.Vector;

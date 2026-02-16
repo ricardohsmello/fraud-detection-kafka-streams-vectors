@@ -21,7 +21,7 @@ spring:
         spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
         spring.json.use.type.headers: false
         spring.json.value.default.type: com.devnexus.frauddetection.domain.model.Transaction
-        spring.json.trusted.packages: com.devnexus.frauddetection.domain.model
+        spring.json.trusted.packages: com.devnexus.frauddetection.domain.model,com.devnexus.frauddetection.domain.events,com.devnexus.frauddetection.domain
 
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
@@ -40,8 +40,12 @@ app:
       suspicious: transactions-suspicious
       to-score: transactions-to-score
       dlq: transactions-dlq
+    consumers:
+      suspicious:
+        group-id: transaction-suspicious-consumer
+        value-type: com.devnexus.frauddetection.domain.model.SuspiciousTransactionEvent
   generator:
-    enabled: true
+    enabled: false
     interval-ms: 1000
   fraud:
     rules:

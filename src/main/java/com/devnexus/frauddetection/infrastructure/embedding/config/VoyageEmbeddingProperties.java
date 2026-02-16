@@ -7,4 +7,5 @@ public record VoyageEmbeddingProperties(
         String apiKey,
         String model,
         String baseUrl,
-	 	int outputDimension) {}
+	 	int outputDimension)
+{}

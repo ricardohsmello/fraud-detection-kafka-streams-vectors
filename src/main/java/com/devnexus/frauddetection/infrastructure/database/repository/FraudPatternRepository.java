@@ -1,6 +1,6 @@
-package com.devnexus.frauddetection.infrastructure.repository;
+package com.devnexus.frauddetection.infrastructure.database.repository;
 
-import com.devnexus.frauddetection.domain.model.FraudPattern;
+import com.devnexus.frauddetection.infrastructure.database.document.FraudPattern;
 import org.springframework.data.domain.Score;
 import org.springframework.data.domain.SearchResults;
 import org.springframework.data.domain.Vector;

@@ -1,6 +1,6 @@
-package com.devnexus.frauddetection.infrastructure.repository;
+package com.devnexus.frauddetection.infrastructure.database.repository;
 
-import com.devnexus.frauddetection.domain.model.ApprovedTransaction;
+import com.devnexus.frauddetection.infrastructure.database.document.ApprovedTransaction;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
