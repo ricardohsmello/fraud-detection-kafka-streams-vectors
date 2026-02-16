@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.repository.VectorSearch;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface FraudPatternsRepository extends MongoRepository<FraudPattern, String> {
+public interface FraudPatternRepository extends MongoRepository<FraudPattern, String> {
 
     @VectorSearch(
             indexName = "fraud_patterns_vector_index",
