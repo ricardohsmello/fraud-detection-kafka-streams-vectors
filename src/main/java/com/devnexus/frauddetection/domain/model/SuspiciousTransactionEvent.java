@@ -1,6 +1,4 @@
-package com.devnexus.frauddetection.domain.events;
-
-import com.devnexus.frauddetection.domain.model.Transaction;
+package com.devnexus.frauddetection.domain.model;
 
 import java.time.Instant;
 
