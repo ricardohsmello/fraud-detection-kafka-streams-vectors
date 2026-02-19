@@ -23,12 +23,11 @@ public class MongoFraudPatternSearchAdapter implements FraudPatternSearchPort {
     }
 
     @Override
-    public ScoringResult searchSimilarPatterns(float[] embedding, double threshold) {
-        Vector vector = Vector.of(embedding);
+    public ScoringResult searchSimilarPatterns(Vector embedding, double threshold) {
 
         SearchResults<FraudPattern> results =
                 fraudPatternRepository.searchTopFraudPatternsByEmbeddingNear(
-                        vector,
+                        embedding,
                         Score.of(threshold)
                 );
 

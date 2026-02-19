@@ -7,6 +7,7 @@ import com.devnexus.frauddetection.domain.port.TransactionEmbedderPort;
 import com.devnexus.frauddetection.domain.port.TransactionPersistencePort;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Vector;
 
 public class VectorScoringUseCase {
 
@@ -30,7 +31,7 @@ public class VectorScoringUseCase {
     }
 
     public void score(Transaction transaction) {
-        float[] embedding = embedder.embed(transaction);
+        Vector embedding = embedder.embed(transaction);
 
         ScoringResult result = fraudPatternSearch.searchSimilarPatterns(embedding, similarityThreshold);
 

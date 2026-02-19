@@ -1,14 +1,15 @@
 package com.devnexus.frauddetection.infrastructure.message.consumer;
 
-import com.devnexus.frauddetection.domain.model.ApprovedTransaction;
-import com.devnexus.frauddetection.domain.model.FraudPattern;
-import com.devnexus.frauddetection.domain.model.SuspiciousTransaction;
 import com.devnexus.frauddetection.domain.model.Transaction;
-import com.devnexus.frauddetection.infrastructure.embedding.TransactionEmbedder;
-import com.devnexus.frauddetection.infrastructure.embedding.config.VectorFraudProperties;
-import com.devnexus.frauddetection.infrastructure.repository.ApprovedTransactionRepository;
-import com.devnexus.frauddetection.infrastructure.repository.FraudPatternRepository;
-import com.devnexus.frauddetection.infrastructure.repository.SuspiciousTransactionRepository;
+import com.devnexus.frauddetection.domain.model.VectorMatch;
+import com.devnexus.frauddetection.infrastructure.database.document.ApprovedTransaction;
+import com.devnexus.frauddetection.infrastructure.database.document.FraudPattern;
+import com.devnexus.frauddetection.infrastructure.database.document.SuspiciousTransaction;
+import com.devnexus.frauddetection.infrastructure.database.repository.ApprovedTransactionRepository;
+import com.devnexus.frauddetection.infrastructure.database.repository.FraudPatternRepository;
+import com.devnexus.frauddetection.infrastructure.database.repository.SuspiciousTransactionRepository;
+import com.devnexus.frauddetection.infrastructure.embedding.voyage.VoyageTransactionEmbedderAdapter;
+import com.devnexus.frauddetection.infrastructure.streams.config.VectorFraudProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Score;
@@ -26,14 +27,14 @@ public class TransactionToScoreConsumer {
 
     private static final Logger log = LoggerFactory.getLogger(TransactionToScoreConsumer.class);
 
-    private final TransactionEmbedder embedder;
+    private final VoyageTransactionEmbedderAdapter embedder;
     private final FraudPatternRepository fraudPatternRepository;
     private final VectorFraudProperties props;
     private final SuspiciousTransactionRepository suspiciousRepo;
     private final ApprovedTransactionRepository approvedRepo;
 
     public TransactionToScoreConsumer(
-            TransactionEmbedder embedder,
+            VoyageTransactionEmbedderAdapter embedder,
             FraudPatternRepository fraudPatternRepository,
             VectorFraudProperties props,
             SuspiciousTransactionRepository suspiciousRepo,
@@ -113,8 +114,8 @@ public class TransactionToScoreConsumer {
         boolean classifiedFraud = fraudCount >= safeCount;
 
         if (classifiedFraud) {
-            List<SuspiciousTransaction.VectorMatch> matches = content.stream()
-                    .map(r -> new SuspiciousTransaction.VectorMatch(
+            List<VectorMatch> matches = content.stream()
+                    .map(r -> new VectorMatch(
                             r.getContent() != null ? r.getContent().id() : null,
                             r.getScore() != null ? r.getScore().getValue() : 0.0
                     ))

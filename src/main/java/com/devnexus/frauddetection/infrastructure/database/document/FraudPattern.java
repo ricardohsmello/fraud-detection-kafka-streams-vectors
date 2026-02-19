@@ -1,5 +1,6 @@
 package com.devnexus.frauddetection.infrastructure.database.document;
 
+import com.devnexus.frauddetection.domain.model.Transaction;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.domain.Vector;
 import org.springframework.data.mongodb.core.mapping.Document;

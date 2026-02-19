@@ -5,6 +5,7 @@ import com.devnexus.frauddetection.domain.port.TransactionEmbedderPort;
 import com.devnexus.frauddetection.infrastructure.embedding.config.VoyageEmbeddingProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Vector;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public class VoyageTransactionEmbedderAdapter implements TransactionEmbedderPort
 	}
 
 	@Override
-	public float[] embed(Transaction transaction) {
+	public Vector embed(Transaction transaction) {
 		String input = TransactionEmbeddingText.toText(transaction);
 
 		log.info("Generating embeddings .. ");
@@ -40,6 +41,6 @@ public class VoyageTransactionEmbedderAdapter implements TransactionEmbedderPort
 			result[i] = embedding.get(i).floatValue();
 		}
 
-		return result;
+		return Vector.of(result);
 	}
 }

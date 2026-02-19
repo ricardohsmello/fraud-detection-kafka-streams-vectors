@@ -30,6 +30,11 @@ app:
       suspicious: transactions-suspicious
       to-score: transactions-to-score
       dlq: transactions-dlq
+    consumers:
+      suspicious:
+        group-id: transaction-suspicious-consumer
+        value-type: com.devnexus.frauddetection.domain.model.SuspiciousAlert
+
   generator:
     enabled: false
     interval-ms: 1000
@@ -47,3 +52,4 @@ app:
       api-key: ${VOYAGEAI_API_KEY}
       model: voyage-finance-2
       base-url: https://api.voyageai.com
+      output-dimension: 1024

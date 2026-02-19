@@ -1,8 +1,8 @@
 package com.devnexus.frauddetection.infrastructure.embedding.seed;
 
-import com.devnexus.frauddetection.domain.model.FraudPattern;
-import com.devnexus.frauddetection.infrastructure.embedding.TransactionEmbedder;
-import com.devnexus.frauddetection.infrastructure.repository.FraudPatternRepository;
+import com.devnexus.frauddetection.infrastructure.database.document.FraudPattern;
+import com.devnexus.frauddetection.infrastructure.database.repository.FraudPatternRepository;
+import com.devnexus.frauddetection.infrastructure.embedding.voyage.VoyageTransactionEmbedderAdapter;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,9 +17,9 @@ public class FraudSeededEmbeddingBackfill implements CommandLineRunner {
     private static final Logger log = LoggerFactory.getLogger(FraudSeededEmbeddingBackfill.class);
 
     private final FraudPatternRepository repo;
-    private final TransactionEmbedder embedder;
+    private final VoyageTransactionEmbedderAdapter embedder;
 
-    public FraudSeededEmbeddingBackfill(FraudPatternRepository repo, TransactionEmbedder embedder) {
+    public FraudSeededEmbeddingBackfill(FraudPatternRepository repo, VoyageTransactionEmbedderAdapter embedder) {
         this.repo = repo;
         this.embedder = embedder;
     }
