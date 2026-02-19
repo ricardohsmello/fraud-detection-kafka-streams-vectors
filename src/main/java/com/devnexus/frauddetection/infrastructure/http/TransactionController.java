@@ -1,7 +1,7 @@
 package com.devnexus.frauddetection.infrastructure.http;
 
-import com.devnexus.frauddetection.domain.Transaction;
-import com.devnexus.frauddetection.infrastructure.message.producer.TransactionProducer;
+import com.devnexus.frauddetection.application.request.TransactionRequest;
+import com.devnexus.frauddetection.application.usecase.ProduceTransactionUseCase;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,15 +12,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/transactions")
 public class TransactionController {
 
-	private final TransactionProducer transactionProducer;
+ 	private final ProduceTransactionUseCase produceTransactionUseCase;
 
-	TransactionController(TransactionProducer transactionProducer) {
-		this.transactionProducer = transactionProducer;
+	TransactionController(ProduceTransactionUseCase produceTransactionUseCase) {
+		this.produceTransactionUseCase = produceTransactionUseCase;
 	}
 
 	@PostMapping
-	public ResponseEntity<String> create(@RequestBody Transaction transaction) {
-		transactionProducer.send(transaction);
+	public ResponseEntity<String> create(@RequestBody TransactionRequest transactionRequest) {
+		produceTransactionUseCase.execute(transactionRequest);
 		return ResponseEntity.ok("Transaction sent to Kafka!");
 	}
 }

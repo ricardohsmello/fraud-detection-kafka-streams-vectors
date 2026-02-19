@@ -1,4 +1,4 @@
-package com.devnexus.frauddetection.domain;
+package com.devnexus.frauddetection.domain.model;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -8,7 +8,7 @@ import java.util.Objects;
 public record FraudDetectionState(
     Transaction lastTransaction,
     List<Instant> recentTransactionTimes,
-    FraudAlert fraudAlert
+    SuspiciousAlert suspiciousAlert
 ) {
     private static final int MAX_RECENT_TRANSACTIONS = 100;
 
@@ -16,7 +16,7 @@ public record FraudDetectionState(
         return new FraudDetectionState(null, new ArrayList<>(), null);
     }
 
-    public FraudDetectionState withTransaction(Transaction transaction, FraudAlert alert) {
+    public FraudDetectionState withTransaction(Transaction transaction, SuspiciousAlert alert) {
         List<Instant> updatedTimes = new ArrayList<>(recentTransactionTimes);
         updatedTimes.add(transaction.transactionTime());
 
@@ -45,6 +45,6 @@ public record FraudDetectionState(
     }
 
     public boolean hasFraudAlert() {
-        return fraudAlert != null;
+        return suspiciousAlert != null;
     }
 }

@@ -1,11 +1,10 @@
 package com.devnexus.frauddetection.domain.rules;
 
-import com.devnexus.frauddetection.domain.FraudAlert;
-import com.devnexus.frauddetection.domain.Transaction;
+import com.devnexus.frauddetection.domain.model.SuspiciousAlert;
+import com.devnexus.frauddetection.domain.model.Transaction;
 
 import java.time.Duration;
 import java.util.Optional;
-
 
 public class ImpossibleTravelValidator {
 
@@ -18,7 +17,7 @@ public class ImpossibleTravelValidator {
         this.maxTravelSpeedKmh = maxTravelSpeedKmh;
     }
 
-    public Optional<FraudAlert> validate(Transaction previous, Transaction current) {
+    public Optional<SuspiciousAlert> validate(Transaction previous, Transaction current) {
         if (!hasValidCoordinates(previous) || !hasValidCoordinates(current)) {
             return Optional.empty();
         }
@@ -55,7 +54,7 @@ public class ImpossibleTravelValidator {
                 timeBetween.toMinutes()
         );
 
-        return Optional.of(FraudAlert.of(current, RULE_ID, description));
+        return Optional.of(SuspiciousAlert.of(current, RULE_ID, description));
     }
 
     private double calculateDistanceKm(double lat1, double lon1, double lat2, double lon2) {

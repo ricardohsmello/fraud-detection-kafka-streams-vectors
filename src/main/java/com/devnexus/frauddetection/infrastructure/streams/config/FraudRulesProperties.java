@@ -7,4 +7,6 @@ public record FraudRulesProperties(
     double maxTravelSpeedKmh,
     long maxTransactionsPerWindow,
     long velocityWindowMinutes
-) {}
+) {
+
+}

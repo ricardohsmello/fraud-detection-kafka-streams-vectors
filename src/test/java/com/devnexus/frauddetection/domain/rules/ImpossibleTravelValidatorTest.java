@@ -1,7 +1,7 @@
 package com.devnexus.frauddetection.domain.rules;
 
-import com.devnexus.frauddetection.domain.FraudAlert;
-import com.devnexus.frauddetection.domain.Transaction;
+import com.devnexus.frauddetection.domain.model.SuspiciousAlert;
+import com.devnexus.frauddetection.domain.model.Transaction;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -36,7 +36,7 @@ class ImpossibleTravelValidatorTest {
                 40.7128, -74.0060
         );
 
-        Optional<FraudAlert> result = validator.validate(saoPaulo, newYork);
+        Optional<SuspiciousAlert> result = validator.validate(saoPaulo, newYork);
 
         assertTrue(result.isPresent());
         assertEquals("IMPOSSIBLE_TRAVEL", result.get().ruleId());
@@ -97,7 +97,7 @@ class ImpossibleTravelValidatorTest {
                 -22.9068, -43.1729
         );
 
-        Optional<FraudAlert> result = validator.validate(saoPaulo, rioDeJaneiro);
+        Optional<SuspiciousAlert> result = validator.validate(saoPaulo, rioDeJaneiro);
 
         assertTrue(result.isPresent());
         assertEquals("IMPOSSIBLE_TRAVEL", result.get().ruleId());
@@ -158,7 +158,7 @@ class ImpossibleTravelValidatorTest {
                 -22.9068, -43.1729
         );
 
-        Optional<FraudAlert> result = validator.validate(saoPaulo, rio);
+        Optional<SuspiciousAlert> result = validator.validate(saoPaulo, rio);
 
         assertTrue(result.isPresent(),
                 "360 km in 10 minutes (2160 km/h) should be impossible");

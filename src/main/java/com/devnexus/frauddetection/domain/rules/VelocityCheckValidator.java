@@ -1,7 +1,7 @@
 package com.devnexus.frauddetection.domain.rules;
 
-import com.devnexus.frauddetection.domain.FraudAlert;
-import com.devnexus.frauddetection.domain.Transaction;
+import com.devnexus.frauddetection.domain.model.SuspiciousAlert;
+import com.devnexus.frauddetection.domain.model.Transaction;
 
 import java.util.Optional;
 
@@ -21,7 +21,7 @@ public class VelocityCheckValidator {
         return windowMinutes;
     }
 
-    public Optional<FraudAlert> validate(long transactionCount, Transaction transaction) {
+    public Optional<SuspiciousAlert> validate(long transactionCount, Transaction transaction) {
         if (transactionCount <= maxTransactions) {
             return Optional.empty();
         }
@@ -33,6 +33,6 @@ public class VelocityCheckValidator {
                 maxTransactions
         );
 
-        return Optional.of(FraudAlert.of(transaction, RULE_ID, description));
+        return Optional.of(SuspiciousAlert.of(transaction, RULE_ID, description));
     }
 }
