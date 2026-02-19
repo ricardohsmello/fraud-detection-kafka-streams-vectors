@@ -22,7 +22,12 @@ public class SuspiciousTransactionConsumer {
             topics = "${app.kafka.topics.suspicious}",
             groupId = "${app.kafka.consumers.suspicious.group-id}",
             properties = {
-                    "spring.json.value.default.type=${app.kafka.consumers.suspicious.value-type}"
+                    "key.deserializer=${app.kafka.consumers.suspicious.key-deserializer}",
+                    "value.deserializer=${app.kafka.consumers.suspicious.value-deserializer}",
+                    "spring.deserializer.value.delegate.class=${app.kafka.consumers.suspicious.delegate-deserializer}",
+                    "spring.json.use.type.headers=${app.kafka.consumers.suspicious.use-type-headers}",
+                    "spring.json.value.default.type=${app.kafka.consumers.suspicious.value-type}",
+                    "spring.json.trusted.packages=${app.kafka.consumers.suspicious.trusted-packages}"
             }
     )
     public void onMessage(SuspiciousAlert evt) {

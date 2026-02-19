@@ -34,6 +34,11 @@ app:
       suspicious:
         group-id: transaction-suspicious-consumer
         value-type: com.devnexus.frauddetection.domain.model.SuspiciousAlert
+        key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+        value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+        delegate-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+        use-type-headers: "false"
+        trusted-packages: com.devnexus.frauddetection.domain.model
       to-score:
         group-id: fraud-detection-to-score-consumer
         value-type: com.devnexus.frauddetection.domain.model.Transaction
