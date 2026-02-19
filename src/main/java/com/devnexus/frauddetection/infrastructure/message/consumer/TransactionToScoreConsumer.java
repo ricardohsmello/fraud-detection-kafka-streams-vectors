@@ -1,15 +1,5 @@
 package com.devnexus.frauddetection.infrastructure.message.consumer;
 
-//import com.devnexus.frauddetection.domain.model.ApprovedTransaction;
-//import com.devnexus.frauddetection.domain.model.FraudPattern;
-//import com.devnexus.frauddetection.domain.model.SuspiciousTransaction;
-//import com.devnexus.frauddetection.domain.model.Transaction;
-//import com.devnexus.frauddetection.infrastructure.embedding.TransactionEmbedder;
-//import com.devnexus.frauddetection.infrastructure.embedding.config.VectorFraudProperties;
-//import com.devnexus.frauddetection.infrastructure.repository.ApprovedTransactionRepository;
-//import com.devnexus.frauddetection.infrastructure.repository.FraudPatternRepository;
-//import com.devnexus.frauddetection.infrastructure.repository.SuspiciousTransactionRepository;
-
 import com.devnexus.frauddetection.application.usecase.VectorScoringUseCase;
 import com.devnexus.frauddetection.domain.model.Transaction;
 import org.slf4j.Logger;
