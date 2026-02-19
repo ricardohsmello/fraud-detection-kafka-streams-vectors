@@ -46,5 +46,6 @@ public class VectorScoringUseCase {
             log.info(">>> VECTOR APPROVED: txId={}, topScore={}, threshold={}",
                     transaction.transactionId(), result.topScore(), similarityThreshold);
         }
+
     }
 }

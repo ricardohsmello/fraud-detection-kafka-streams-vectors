@@ -5,6 +5,8 @@ import com.devnexus.frauddetection.domain.model.VectorMatch;
 import com.devnexus.frauddetection.domain.port.FraudPatternSearchPort;
 import com.devnexus.frauddetection.infrastructure.database.document.FraudPattern;
 import com.devnexus.frauddetection.infrastructure.database.repository.FraudPatternRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Score;
 import org.springframework.data.domain.SearchResult;
 import org.springframework.data.domain.SearchResults;
@@ -15,6 +17,8 @@ import java.util.List;
 
 @Component
 public class MongoFraudPatternSearchAdapter implements FraudPatternSearchPort {
+
+    private static final Logger logger = LoggerFactory.getLogger(MongoFraudPatternSearchAdapter.class);
 
     private final FraudPatternRepository fraudPatternRepository;
 
@@ -32,6 +36,24 @@ public class MongoFraudPatternSearchAdapter implements FraudPatternSearchPort {
                 );
 
         List<SearchResult<FraudPattern>> content = results.getContent();
+
+        int i = 0;
+
+        for (SearchResult<FraudPattern> r : content) {
+            FraudPattern fp = r.getContent();
+            double score = r.getScore() != null ? r.getScore().getValue() : 0.0;
+
+            String matchId = fp != null ? fp.id() : "<null>";
+            boolean matchFraud = fp != null && fp.fraud();
+            String matchRule = fp != null ? fp.ruleId() : "<null>";
+            String matchDesc = fp != null ? fp.description() : "<null>";
+            String matchMerchant = (fp != null && fp.transaction() != null) ? fp.transaction().merchant() : "<null>";
+            String matchCity = (fp != null && fp.transaction() != null) ? fp.transaction().city() : "<null>";
+            String matchTxId = (fp != null && fp.transaction() != null) ? fp.transaction().transactionId() : "<null>";
+
+            logger.info(">>> MATCH[{}]: score={}, fraud={}, id={}, ruleId={}, txId={}, merchant={}, city={}, desc={}",
+                    i++, score, matchFraud, matchId, matchRule, matchTxId, matchMerchant, matchCity, matchDesc);
+        }
 
         if (content.isEmpty()) {
             return ScoringResult.noMatch();
