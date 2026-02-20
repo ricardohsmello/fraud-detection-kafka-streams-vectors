@@ -1,3 +1,6 @@
+logging:
+  level:
+    org.mongodb.driver.protocol.command: DEBUG
 spring:
   application:
     name: fraud-detection

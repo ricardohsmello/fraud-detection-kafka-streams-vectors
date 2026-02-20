@@ -61,10 +61,24 @@ public class MongoFraudPatternSearchAdapter implements FraudPatternSearchPort {
 
         double topScore = content.getFirst().getScore().getValue();
 
-        List<VectorMatch> matches = content.stream()
-                .map(r -> new VectorMatch(r.getContent().id(), r.getScore().getValue()))
-                .toList();
 
-        return ScoringResult.withMatches(topScore, matches);
+        long fraudCount = content.stream()
+                .filter(r -> r.getContent() != null && r.getContent().fraud())
+                .count();
+
+        long safeCount = content.size() - fraudCount;
+
+        boolean classifiedFraud = fraudCount >= safeCount;
+
+        if (classifiedFraud) {
+            List<VectorMatch> matches = content.stream()
+                    .map(r -> new VectorMatch(r.getContent().id(), r.getScore().getValue()))
+                    .toList();
+
+            return ScoringResult.withMatches(topScore, matches);
+        }
+
+        return ScoringResult.noMatch();
+
     }
 }

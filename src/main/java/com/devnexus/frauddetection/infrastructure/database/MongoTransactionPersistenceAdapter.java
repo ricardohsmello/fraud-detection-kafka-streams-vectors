@@ -34,8 +34,6 @@ public class MongoTransactionPersistenceAdapter implements TransactionPersistenc
     @Override
     public void saveApproved(Transaction transaction) {
         approvedRepo.save(new ApprovedTransaction(null, transaction, Instant.now()));
-
-        log.info("Approved transaction saved.");
     }
 
     @Override
