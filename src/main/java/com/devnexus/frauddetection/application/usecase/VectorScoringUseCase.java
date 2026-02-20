@@ -38,12 +38,12 @@ public class VectorScoringUseCase {
         if (result.matchFound()) {
             persistence.saveSuspiciousFromVector(transaction, result, similarityThreshold);
 
-            log.warn(">>> VECTOR FLAGGED: txId={}, topScore={}, threshold={}, matches={}",
+            log.warn("[VECTOR SCORING] Transaction flagged: txId={}, topScore={}, threshold={}, matches={}",
                     transaction.transactionId(), result.topScore(), similarityThreshold, result.matches().size());
         } else {
             persistence.saveApproved(transaction);
 
-            log.info(">>> VECTOR APPROVED: txId={}, topScore={}, threshold={}",
+            log.info("[VECTOR SCORING] Transaction approved: txId={}, topScore={}, threshold={}",
                     transaction.transactionId(), result.topScore(), similarityThreshold);
         }
 

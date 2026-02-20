@@ -25,14 +25,16 @@ public class VoyageTransactionEmbedderAdapter implements TransactionEmbedderPort
 
 	@Override
 	public Vector embed(Transaction transaction) {
+		log.info("[VECTOR SCORING] Validations started");
+
 		String input = TransactionEmbeddingText.toText(transaction);
 
-		log.info("Generating embeddings .. ");
+		log.info("[VECTOR SCORING] Converting transaction to embeddings");
 
 		var res = client.embed(new EmbeddingsRequest(
 				List.of(input), config.model(), "query", config.outputDimension()));
 
-		log.info("Embeddings generated successfully!");
+		log.info("[VECTOR SCORING] Embeddings generated	successfully");
 
 		var embedding = res.data().getFirst().embedding();
 

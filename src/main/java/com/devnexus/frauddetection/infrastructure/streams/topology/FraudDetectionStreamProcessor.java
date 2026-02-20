@@ -72,6 +72,8 @@ public class FraudDetectionStreamProcessor {
                         (cardNumber, newTransaction, currentState) -> {
                             SuspiciousAlert alert = null;
 
+                            log.info("[GUARDRAILS] Fraud rule validations started");
+
                             Transaction previousTx = currentState.lastTransaction();
                             if (previousTx != null) {
                                 alert = impossibleTravelValidator.validate(previousTx, newTransaction).orElse(null);
@@ -89,7 +91,7 @@ public class FraudDetectionStreamProcessor {
                                 .withValueSerde(stateSerde)
                 )
                 .toStream()
-                .peek((cardNumber, state) -> log.info(">>> FRAUD CHECK: card={}, hasFraud={}",
+                .peek((cardNumber, state) -> log.info("[GUARDRAILS] Fraud check — card={}, hasFraud={}",
                         cardNumber, state.hasFraudAlert()));
     }
 
@@ -113,7 +115,7 @@ public class FraudDetectionStreamProcessor {
                                                 Instant.now()
                                         ))
                                         .peek((card, evt) -> log.info(
-                                                ">>> BLOCKED: txId={}, rule={}",
+                                                "[GUARDRAILS] Blocked — txId={}, rule={}",
                                                 evt.transaction().transactionId(),
                                                 evt.ruleId()))
                                         .to(suspiciousTopic,
@@ -125,7 +127,7 @@ public class FraudDetectionStreamProcessor {
                                 passedStream
                                         .mapValues(FraudDetectionState::lastTransaction)
                                         .peek((cardNumber, tx) -> log.info(
-                                                ">>> APPROVED: card={}, txId={}",
+                                                "[GUARDRAILS] Approved — card={}, txId={}",
                                                 cardNumber,
                                                 tx.transactionId()))
                                         .to(toScoreTopic,
